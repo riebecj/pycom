@@ -1,10 +1,11 @@
 implemented = [
     ('OP', 'LPAREN'),
     ('OP', 'RPAREN'),
+    ('OP', 'in'),
 
     ('KW', 'def'),
-
-
+    ('KW', 'for'),
+    ('KW', 'return'),
 
 
 
@@ -22,15 +23,22 @@ implementedtypes = [
 ]
 
 pythonbuiltins = [
-    ('NAME', 'print')
+    ('NAME', 'print'),
+    ('NAME', 'range')
 ]
 
 cfuncs = [
     'void print(std::string str){std::cout << str << std::endl;}'
-
+    'void print(int istr){std::cout << istr << std::endl;}'
+    'void print(float fstr){std::cout << fstr << std::endl;}'
+    'void print(long long int llistr){std::cout << llistr << std::endl;}'
+    'void print(long double ldstr){std::cout << ldstr << std::endl;}'
 ]
 
 types = ["str", "int", "float"]
+
+includes = ["iostream", "string", "headers/range.hpp", "sstream"]
+using = ["util::lang::range"]
 
 pytypetoctype = {
     "str": "std::string",
@@ -47,7 +55,9 @@ class Compile:
         self.oktokens = self.checktokens()
 
     def iteratetokens(self):
-        code = "#include <iostream>\n#include <string>\n"
+        code = ""
+        for include in includes: code += f'#include "{include}"\n'
+        for use in using: code += f"using {use};\n"
         for func in cfuncs: code += func + " "
         code += "\n"
         for i in range(len(self.oktokens)):
@@ -59,7 +69,14 @@ class Compile:
                     code += "("
 
                 elif self.oktokens[i][self.value] == "RPAREN":
-                    code += ")"
+                    if self.oktokens[i-1][self.type] == "INT" and self.oktokens[i-2] == ("SIG", "COMMA") and self.oktokens[i-3][self.type] == "INT" and self.oktokens[i-4] == ("OP", "LPAREN") and self.oktokens[i-5] == ("NAME", "range") and self.oktokens[i-6] == ("OP", "in") and self.oktokens[i-7][self.type] == "VAR" and self.oktokens[i-8] == ("KW", "for"):
+                        code += "))"
+
+                    else:
+                        code += ")"
+
+                elif self.oktokens[i][self.value] == "in":
+                    code += ": "
 
             elif self.oktokens[i][self.type] == "STRING" or self.oktokens[i][self.type] == "INT":
                 code += self.oktokens[i][self.value]
@@ -84,6 +101,13 @@ class Compile:
 
                     else:
                         code += "void "
+
+                elif self.oktokens[i][self.value] == "for":
+                    itervarname = self.oktokens[i+1][self.value]
+                    code += f"for(auto {itervarname}"
+
+                elif self.oktokens[i][self.value] == "return":
+                    code += "return "
 
             elif self.oktokens[i][self.type] == "FUNC":
                 code += self.oktokens[i][self.value]

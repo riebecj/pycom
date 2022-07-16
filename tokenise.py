@@ -140,20 +140,12 @@ def gettokens(filename: str):
 						elif token_list[i+1] == ("OP", "ASSIGN"):
 							token_list[i] = ("VAR", token_list[i][1])
 							varnames.append(token_list[i][1])
-
-						elif token_list[i-1] == ("OP", "LPAREN") and token_list[i-2][0] == "FUNC":
-							token_list[i] = ("PARAM", token_list[i][1])
+						
+						elif token_list[i-1] == ("KW", "for"):
+							token_list[i] = ("VAR", token_list[i][1])
 							varnames.append(token_list[i][1])
 
-						elif token_list[i+1] == ("SIG", "COMMA") and token_list[i-1] == ("SIG", "COMMA"):
-							token_list[i] = ("PARAM", token_list[i][1])
-							varnames.append(token_list[i][1])
-
-						elif token_list[i+1] == ("SIG", "BLOCK_START") and token_list[i-1] == ("SIG", "COMMA"):
-							token_list[i] = ("PARAM", token_list[i][1])
-							varnames.append(token_list[i][1])
-
-						elif token_list[i+1] == ("OP", "RPAREN"):
+						elif token_list[i+1] == ("SIG", "BLOCK_START"):
 							token_list[i] = ("PARAM", token_list[i][1])
 							varnames.append(token_list[i][1])
 

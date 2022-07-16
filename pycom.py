@@ -18,6 +18,7 @@ RUN = False
 RUNANDDEL = False
 TOKENS = False
 FAILPRINT = False
+PRINT = False
 
 if "-d" in flags: DEBUG = True
 if "-i" in flags: INFO = True
@@ -25,10 +26,11 @@ if "-r" in flags: RUN = True
 if "-rd" in flags: RUNANDDEL = True
 if "-t" in flags: TOKENS = True
 if "-fp" in flags: FAILPRINT = True
+if "-p" in flags: PRINT = True
 
 if DEBUG:
-    with open("test.txt", "w") as f: f.write("")
-    with open("test.txt", "a+") as f:
+    with open("tests/test.txt", "w") as f: f.write("")
+    with open("tests/test.txt", "a+") as f:
         for i in tokenise.gettokens(filename):
             f.write(str(i) + "\n")
         exit(1)
@@ -53,10 +55,12 @@ if TOKENS:
     print(tokens)
     exit(1)
 
+if PRINT:
+    print(compiledcode)
+    exit(1)
 
 if error != b"":
     print(red(f"error during conversion to c: {error.decode('utf-8')}"))
-    print(compiledcode)
     exit(1)
 
 if output == b"":

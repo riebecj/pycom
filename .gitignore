@@ -5,7 +5,7 @@ __pycache__/
 
 # C extensions
 *.so
-*.c
+*.cpp
 
 # Distribution / packaging
 .Python
@@ -131,4 +131,4 @@ dmypy.json
 
 # Other
 source
-*.txt
+tests/

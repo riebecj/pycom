@@ -1,5 +1,4 @@
-def foo(bar: str, baz: int):
-    print("Hello, World!");
-
 def main():
-    foo("Hello", 3);
+    for i in range(1, 10):
+        print(i);
+    return 0;
