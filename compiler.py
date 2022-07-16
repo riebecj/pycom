@@ -24,7 +24,7 @@ pythonbuiltins = [
 ]
 
 cfuncs = [
-    'void print(const char *string){printf("%s", string);}'
+    'void print(const char *string){printf("%s%c", string, 0x0A);}'
 
 ]
 
@@ -43,7 +43,7 @@ class Compile:
         for i in range(len(self.oktokens)):
             if self.oktokens[i][self.type] == "NAME":
                 if self.oktokens[i][self.value] == "print":
-                    code += "printf"
+                    code += "print"
             
             elif self.oktokens[i][self.type] == "OP":
                 if self.oktokens[i][self.value] == "LPAREN":
