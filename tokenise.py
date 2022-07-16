@@ -47,7 +47,8 @@ tokmap = {
 
 	".": "DOT",
 	",": "COMMA",
-	":": "BLOCK_START"
+	":": "BLOCK_START",
+	";": "BLOCK_END"
 }
 
 keywords = ["import", "if", "elif", "else", "for", "while", "try", "except", "finally", "True", "False", "continue",
@@ -57,7 +58,7 @@ keywords = ["import", "if", "elif", "else", "for", "while", "try", "except", "fi
 operators = ["+", "-", "*", "/", "//", "**", "+=", "-=", "*=", "/=", "%=", "**=", "//=", "&=", "|=", ">>=", "<<=", "=",
     "==", "!=", ">", "<", ">=", "<=", "&", "|", "^", ">>", "<<", "(", ")", "[", "]", "{", "}", "and", "or", "in", "is", "not"]
 
-signifiers = [":", ".", ",", "\n", "\t"]
+signifiers = [":", ";", ".", ",", "\n", "\t"]
 
 types = ["str", "int", "float", "list", "dict", "set"]
 
@@ -114,55 +115,59 @@ def gettokens(filename: str):
 					if token_list[i][0] == "SIG" and token_list[i][1].isspace():
 						token_list[i] = (typeofcurrent, f"{int(len(current) / 4)} TAB")
 
-			for i in range(len(token_list)):
-				if token_list[i] == ("KW", "def"):
-					token_list[i+1] = ("FUNC", token_list[i+1][1])
-					funcnames.append(token_list[i+1][1])
+			try:
+				for i in range(len(token_list)):
+					if token_list[i] == ("KW", "def"):
+						token_list[i+1] = ("FUNC", token_list[i+1][1])
+						funcnames.append(token_list[i+1][1])
 
-				elif token_list[i][0] == ("KW", "class"):
-					token_list[i+1] = ("CLASS", token_list[i+1][1])
-					classnames.append(token_list[i+1][1])
+					elif token_list[i][0] == ("KW", "class"):
+						token_list[i+1] = ("CLASS", token_list[i+1][1])
+						classnames.append(token_list[i+1][1])
 
-				elif token_list[i] == ("KW", "import"):
-					token_list[i+1] = ("IMPORT_MODULE", token_list[i+1][1])
-					importnames.append(token_list[i+1][1])
+					elif token_list[i] == ("KW", "import"):
+						token_list[i+1] = ("IMPORT_MODULE", token_list[i+1][1])
+						importnames.append(token_list[i+1][1])
 
-				elif token_list[i] == ("SIG", "BLOCK_START"):
-					if token_list[i+1][1] in ["str", "int", "float", "list", "dict", "set"]:
-						token_list[i] = ("SIG", "TYPEPOINTER")
+					elif token_list[i] == ("SIG", "BLOCK_START"):
+						if token_list[i+1][1] in ["str", "int", "float", "list", "dict", "set"]:
+							token_list[i] = ("SIG", "TYPEPOINTER")
 
-				elif token_list[i][0] == "NAME":
-					if token_list[i][1] in types:
-						token_list[i] = ("TYPE", token_list[i][1])
+					elif token_list[i][0] == "NAME":
+						if token_list[i][1] in types:
+							token_list[i] = ("TYPE", token_list[i][1])
 
-					elif token_list[i+1] == ("OP", "ASSIGN"):
-						token_list[i] = ("VAR", token_list[i][1])
-						varnames.append(token_list[i][1])
+						elif token_list[i+1] == ("OP", "ASSIGN"):
+							token_list[i] = ("VAR", token_list[i][1])
+							varnames.append(token_list[i][1])
 
-					elif token_list[i-1] == ("OP", "LPAREN") and token_list[i-2][0] == "FUNC":
-						token_list[i] = ("PARAM", token_list[i][1])
-						varnames.append(token_list[i][1])
+						elif token_list[i-1] == ("OP", "LPAREN") and token_list[i-2][0] == "FUNC":
+							token_list[i] = ("PARAM", token_list[i][1])
+							varnames.append(token_list[i][1])
 
-					elif token_list[i+1] == ("SIG", "COMMA") and token_list[i-1] == ("SIG", "COMMA"):
-						token_list[i] = ("PARAM", token_list[i][1])
-						varnames.append(token_list[i][1])
+						elif token_list[i+1] == ("SIG", "COMMA") and token_list[i-1] == ("SIG", "COMMA"):
+							token_list[i] = ("PARAM", token_list[i][1])
+							varnames.append(token_list[i][1])
 
-					elif token_list[i+1] == ("SIG", "BLOCK_START") and token_list[i-1] == ("SIG", "COMMA"):
-						token_list[i] = ("PARAM", token_list[i][1])
-						varnames.append(token_list[i][1])
+						elif token_list[i+1] == ("SIG", "BLOCK_START") and token_list[i-1] == ("SIG", "COMMA"):
+							token_list[i] = ("PARAM", token_list[i][1])
+							varnames.append(token_list[i][1])
 
-					elif token_list[i+1] == ("OP", "RPAREN"):
-						token_list[i] = ("PARAM", token_list[i][1])
-						varnames.append(token_list[i][1])
+						elif token_list[i+1] == ("OP", "RPAREN"):
+							token_list[i] = ("PARAM", token_list[i][1])
+							varnames.append(token_list[i][1])
 
-					elif token_list[i-1] == ("SIG", "DOT"):
-						token_list[i] = ("METHOD", token_list[i][1])
+						elif token_list[i-1] == ("SIG", "DOT"):
+							token_list[i] = ("METHOD", token_list[i][1])
 
-					else:
-						if token_list[i][1] in varnames: token_list[i] = ("VARREF", token_list[i][1])
-						elif token_list[i][1] in funcnames: token_list[i] = ("FUNCREF", token_list[i][1])
-						elif token_list[i][1] in importnames: token_list[i] = ("IMPORTREF", token_list[i][1])
-						elif token_list[i][1] in classnames: token_list[i] = ("CLASSREF", token_list[i][1])
+						else:
+							if token_list[i][1] in varnames: token_list[i] = ("VARREF", token_list[i][1])
+							elif token_list[i][1] in funcnames: token_list[i] = ("FUNCREF", token_list[i][1])
+							elif token_list[i][1] in importnames: token_list[i] = ("IMPORTREF", token_list[i][1])
+							elif token_list[i][1] in classnames: token_list[i] = ("CLASSREF", token_list[i][1])
+			
+			except IndexError:
+				return token_list
 
 
 			return token_list

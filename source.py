@@ -1,2 +1,5 @@
 def foo(bar: str, baz: int):
-    pass
+    print("Hello, World!");
+
+def main():
+    foo("Hello", 3);

@@ -17,12 +17,14 @@ INFO = False
 RUN = False
 RUNANDDEL = False
 TOKENS = False
+FAILPRINT = False
 
 if "-d" in flags: DEBUG = True
 if "-i" in flags: INFO = True
 if "-r" in flags: RUN = True
 if "-rd" in flags: RUNANDDEL = True
 if "-t" in flags: TOKENS = True
+if "-fp" in flags: FAILPRINT = True
 
 if DEBUG:
     with open("test.txt", "w") as f: f.write("")
@@ -47,11 +49,14 @@ end_time = time.time()
 
 print(f"[INFO] Finished compiling '{filename}';\n") if INFO else None
 
-print(tokens); exit(1) if TOKENS else None
+if TOKENS:
+    print(tokens)
+    exit(1)
 
 
 if error != b"":
     print(red(f"error during conversion to c: {error.decode('utf-8')}"))
+    print(compiledcode)
     exit(1)
 
 if output == b"":
