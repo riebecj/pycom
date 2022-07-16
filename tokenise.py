@@ -151,6 +151,11 @@ def gettokens(filename: str):
 						elif token_list[i][1] in importnames: token_list[i] = ("IMPORTREF", token_list[i][1])
 						elif token_list[i][1] in classnames: token_list[i] = ("CLASSREF", token_list[i][1])
 
+				elif token_list[i] == ("SIG", "BLOCK_START"):
+					if token_list[i+1][1] in ["str", "int", "float", "list", "dict", "set"]:
+						token_list[i] = ("SIG", "TYPEPOINTER")
+
+
 			return token_list
 
 	except FileNotFoundError:

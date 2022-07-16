@@ -24,7 +24,7 @@ pythonbuiltins = [
 ]
 
 cfuncs = [
-    'void print(const char *string){printf("%s%c", string, 0x0A);}'
+    'void print(std::string str){std::cout << str << std::endl;}'
 
 ]
 
@@ -37,7 +37,7 @@ class Compile:
         self.oktokens = self.checktokens()
 
     def iteratetokens(self):
-        code = ""
+        code = "#include <iostream>\n#include <string>\n"
         for func in cfuncs: code += func + " "
         code += "\n"
         for i in range(len(self.oktokens)):
@@ -65,8 +65,12 @@ class Compile:
                 elif self.oktokens[i][self.value] == "BLOCK_START": code += "{"
 
             elif self.oktokens[i][self.type] == "KW":
-                if self.oktokens[i][self.value] == "def": 
-                    code += "void "
+                if self.oktokens[i][self.value] == "def":
+                    if self.oktokens[i+1] == ('FUNC', 'main'):
+                        code += "int "
+
+                    else:
+                        code += "void "
 
             elif self.oktokens[i][self.type] == "FUNC":
                 code += self.oktokens[i][self.value]
