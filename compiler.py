@@ -11,8 +11,8 @@ implemented = [
 
 
     ('SIG', 'NEWLINE'),
-    ('SIG', 'BLOCK_START')
-    
+    ('SIG', 'BLOCK_START'),
+    ('SIG', 'TYPEPOINTER')
 ]
 
 implementedtypes = [
@@ -77,7 +77,7 @@ class Compile:
 
             if i + 1 == len(self.oktokens): code += ";}"
 
-        return code
+        return code, self.oktokens
 
             
     def checktokens(self):

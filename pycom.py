@@ -16,11 +16,13 @@ DEBUG = False
 INFO = False
 RUN = False
 RUNANDDEL = False
+TOKENS = False
 
 if "-d" in flags: DEBUG = True
 if "-i" in flags: INFO = True
 if "-r" in flags: RUN = True
 if "-rd" in flags: RUNANDDEL = True
+if "-t" in flags: TOKENS = True
 
 if DEBUG:
     with open("test.txt", "w") as f: f.write("")
@@ -33,7 +35,7 @@ print(f"[INFO] Started compiling {filename};\n") if INFO else None
 
 start_time = time.time()
 
-compiledcode = compiler.Compile(tokenise.gettokens(filename)).iteratetokens()
+compiledcode, tokens = compiler.Compile(tokenise.gettokens(filename)).iteratetokens()
 
 cmd = f"echo '{compiledcode}' | g++ -w -xc++ - -o {filename.split('.')[0]}"
 
@@ -45,9 +47,11 @@ end_time = time.time()
 
 print(f"[INFO] Finished compiling '{filename}';\n") if INFO else None
 
+print(tokens); exit(1) if TOKENS else None
+
+
 if error != b"":
     print(red(f"error during conversion to c: {error.decode('utf-8')}"))
-    print(compiledcode)
     exit(1)
 
 if output == b"":
