@@ -1,7 +1,18 @@
 implemented = [
     ('OP', 'LPAREN'),
     ('OP', 'RPAREN'),
-    ('SIG', 'NEWLINE')
+
+    ('KW', 'def'),
+
+
+
+
+
+
+
+    ('SIG', 'NEWLINE'),
+    ('SIG', 'BLOCK_START')
+    
 ]
 
 implementedtypes = [
@@ -13,10 +24,8 @@ pythonbuiltins = [
 ]
 
 cfuncs = [
-    """
-void print(const char *string){printf("%s", string);}
-    
-    """
+    'void print(const char *string){printf("%s", string);}'
+
 ]
 
 class Compile:
@@ -29,10 +38,12 @@ class Compile:
 
     def iteratetokens(self):
         code = ""
+        for func in cfuncs: code += func + " "
+        code += "\n"
         for i in range(len(self.oktokens)):
             if self.oktokens[i][self.type] == "NAME":
                 if self.oktokens[i][self.value] == "print":
-                    code += "print"
+                    code += "printf"
             
             elif self.oktokens[i][self.type] == "OP":
                 if self.oktokens[i][self.value] == "LPAREN":
@@ -46,10 +57,21 @@ class Compile:
 
             elif self.oktokens[i][self.type] == "SIG":
                 if self.oktokens[i][self.value] == "NEWLINE":
-                    if self.oktokens[i-1] != ("SIG", "NEWLINE"): code += ";"
+                    if self.oktokens[i-1] != ("SIG", "NEWLINE"): 
+                        if self.oktokens[i-1][self.type] != "SIG" and not str(self.oktokens[i-1][self.value]).endswith(" TAB"):
+                            code += ";"
                     else: code += "\n"
 
-            if i + 1 == len(self.oktokens): code += ";"
+                elif self.oktokens[i][self.value] == "BLOCK_START": code += "{"
+
+            elif self.oktokens[i][self.type] == "KW":
+                if self.oktokens[i][self.value] == "def": 
+                    code += "void "
+
+            elif self.oktokens[i][self.type] == "FUNC":
+                code += self.oktokens[i][self.value]
+
+            if i + 1 == len(self.oktokens): code += ";}"
 
         return code
 
@@ -58,12 +80,19 @@ class Compile:
         oktokens = []
         
         for token in self.tokens:
+            if token[self.type] == "SIG" and str(token[self.value]).endswith(" TAB"):
+                oktokens.append(token)
+                continue
+
             if token not in implemented:
-                if token[self.type] not in ["STRING", "NAME"]: continue
+                if token[self.type] not in ["STRING", "NAME", "FUNC", "VAR", "SIG"]: continue
 
                 elif token[self.type] == "NAME":
                     if token not in pythonbuiltins: continue
                     else: pass
+
+                elif token[self.type] == "FUNC" or token[self.type] == "VAR":
+                    pass
 
                 elif token[self.type] == "STRING": pass
 
