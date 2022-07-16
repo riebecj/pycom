@@ -147,6 +147,10 @@ def gettokens(filename: str):
 						token_list[i] = ("PARAM", token_list[i][1])
 						varnames.append(token_list[i][1])
 
+					elif token_list[i+1] == ("SIG", "BLOCK_START") and token_list[i-1] == ("SIG", "COMMA"):
+						token_list[i] = ("PARAM", token_list[i][1])
+						varnames.append(token_list[i][1])
+
 					elif token_list[i+1] == ("OP", "RPAREN"):
 						token_list[i] = ("PARAM", token_list[i][1])
 						varnames.append(token_list[i][1])
