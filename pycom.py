@@ -19,6 +19,7 @@ RUNANDDEL = False
 TOKENS = False
 FAILPRINT = False
 PRINT = False
+OUTPUT = False
 
 if "-d" in flags: DEBUG = True
 if "-i" in flags: INFO = True
@@ -27,6 +28,7 @@ if "-rd" in flags: RUNANDDEL = True
 if "-t" in flags: TOKENS = True
 if "-fp" in flags: FAILPRINT = True
 if "-p" in flags: PRINT = True
+if "-o" in flags: OUTPUT = True
 
 if DEBUG:
     with open("tests/test.txt", "w") as f: f.write("")
@@ -41,7 +43,21 @@ start_time = time.time()
 
 compiledcode, tokens = compiler.Compile(tokenise.gettokens(filename)).iteratetokens()
 
-cmd = f"echo '{compiledcode}' | g++ -w -xc++ - -o {filename.split('.')[0]}"
+if TOKENS:
+    print(tokens)
+    exit(1)
+
+if PRINT:
+    print(compiledcode)
+    exit(1)
+
+if OUTPUT:
+    outputname = sys.argv[sys.argv.index("-o") + 1]
+
+else:
+    outputname = None
+
+cmd = f"echo '{compiledcode}' | g++ -O2 -w -xc++ - -o {filename.split('.')[0]}" if outputname is None else f"echo '{compiledcode}' | g++ -O2 -w -xc++ - -o {outputname}"
 
 process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
 
@@ -51,16 +67,8 @@ end_time = time.time()
 
 print(f"[INFO] Finished compiling '{filename}';\n") if INFO else None
 
-if TOKENS:
-    print(tokens)
-    exit(1)
-
-if PRINT:
-    print(compiledcode)
-    exit(1)
-
 if error != b"":
-    print(red(f"error during conversion to c: {error.decode('utf-8')}"))
+    print(red(f"error: compilation error: {error.decode('utf-8')}"))
     exit(1)
 
 if output == b"":

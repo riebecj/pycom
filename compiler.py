@@ -1,13 +1,15 @@
-implemented = [
-    ('OP', 'LPAREN'),
-    ('OP', 'RPAREN'),
-    ('OP', 'in'),
+import tokenise
 
+invopmap = {v: k for k, v in tokenise.tokmap.items()}
+
+implemented = [
     ('KW', 'def'),
     ('KW', 'for'),
+    ('KW', 'if'),
+    ('KW', 'elif'),
+    ('KW', 'else'),
+    ('KW', 'while'),
     ('KW', 'return'),
-
-
 
 
 
@@ -46,6 +48,11 @@ pytypetoctype = {
     "float": "long double",
 }
 
+def findlastkw(tokens, currentind):
+    for i in range(currentind, -1, -1):
+        if tokens[i][0] == "KW":
+            return tokens[i]
+
 class Compile:
     def __init__(self, tokens: list):
         self.tokens = tokens
@@ -69,30 +76,31 @@ class Compile:
                     code += "("
 
                 elif self.oktokens[i][self.value] == "RPAREN":
-                    if self.oktokens[i-1][self.type] == "INT" and self.oktokens[i-2] == ("SIG", "COMMA") and self.oktokens[i-3][self.type] == "INT" and self.oktokens[i-4] == ("OP", "LPAREN") and self.oktokens[i-5] == ("NAME", "range") and self.oktokens[i-6] == ("OP", "in") and self.oktokens[i-7][self.type] == "VAR" and self.oktokens[i-8] == ("KW", "for"):
-                        code += "))"
-
-                    else:
-                        code += ")"
+                    code += ")"
 
                 elif self.oktokens[i][self.value] == "in":
                     code += ": "
 
+                else:
+                    mapped = invopmap[self.oktokens[i][self.value]] 
+                    if mapped != ";":
+                        code += mapped
+
             elif self.oktokens[i][self.type] == "STRING" or self.oktokens[i][self.type] == "INT":
                 code += self.oktokens[i][self.value]
-
             elif self.oktokens[i][self.type] == "SIG":
                 if self.oktokens[i][self.value] == "NEWLINE":
-                    if self.oktokens[i-1] != ("SIG", "NEWLINE"): 
+                    if self.oktokens[i-1] != ("SIG", "NEWLINE") and self.oktokens[i+1] != ("SIG", "NEWLINE"): 
                         if self.oktokens[i-1][self.type] != "SIG" and not str(self.oktokens[i-1][self.value]).endswith(" TAB"):
                             code += ";"
                     else: code += "\n"
 
-                elif self.oktokens[i] == ("SIG", "COMMA"):
+                if self.oktokens[i] == ("SIG", "COMMA"):
                     code += ","
 
                 elif self.oktokens[i] == ("SIG", "BLOCK_START"): code += "{"
                 elif self.oktokens[i] == ("SIG", "BLOCK_END"): code += "}"
+                elif self.oktokens[i] == ("SIG", "NEWLINE"): code += "\n"
 
             elif self.oktokens[i][self.type] == "KW":
                 if self.oktokens[i][self.value] == "def":
@@ -105,6 +113,21 @@ class Compile:
                 elif self.oktokens[i][self.value] == "for":
                     itervarname = self.oktokens[i+1][self.value]
                     code += f"for(auto {itervarname}"
+
+                elif self.oktokens[i][self.value] == "if":
+                    code += "if("
+
+                elif self.oktokens[i][self.value] == "elif":
+                    code += "else if("
+
+                elif self.oktokens[i][self.value] == "else":
+                    code += "else"
+
+                elif self.oktokens[i][self.value] == "while":
+                    code += "while("
+
+                elif self.oktokens[i][self.value] == "continue":
+                    code += "continue"
 
                 elif self.oktokens[i][self.value] == "return":
                     code += "return "
@@ -129,7 +152,12 @@ class Compile:
                     exit(1)
 
             if i + 1 != len(self.oktokens): 
-                if self.oktokens[i+1] == ("SIG", "BLOCK_END"): code += ";"
+                if self.oktokens[i+1] == ("SIG", "BLOCK_END") and self.oktokens[i] != ("SIG", "NEWLINE"): code += ";";
+                if self.oktokens[i+1] == ("SIG", "BLOCK_START"):
+                    blockkw = findlastkw(self.oktokens, i)
+                    if blockkw not in [('KW', 'def'), ('KW', 'else')]:
+                        code += ")"
+
 
         return code, self.oktokens
 
@@ -143,9 +171,11 @@ class Compile:
                 continue
 
             if token not in implemented:
-                if token[self.type] not in ["STRING", "NAME", "FUNC", "VAR", "SIG", "PARAM", "TYPE", "INT", "VARREF", "FUNCREF"]: continue
+                if token[self.type] not in ["STRING", "NAME", "FUNC", "VAR", "SIG", "PARAM", "TYPE", "INT", "OP", "VARREF", "FUNCREF"]: continue
 
-                elif token[self.type] == "NAME":
+                if token[self.type] == "OP": pass
+
+                if token[self.type] == "NAME":
                     if token not in pythonbuiltins: continue
                     else: pass
  

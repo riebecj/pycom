@@ -55,7 +55,7 @@ keywords = ["import", "if", "elif", "else", "for", "while", "try", "except", "fi
 "break", "pass", "as", "assert", "def", "class", "await", "return", "from", "async", "await", "del", "global",
 "lambda", "nonlocal", "raise", "with", "yield"]
 
-operators = ["+", "-", "*", "/", "//", "**", "+=", "-=", "*=", "/=", "%=", "**=", "//=", "&=", "|=", ">>=", "<<=", "=",
+operators = ["+", "-", "*", "/", "//", "%", "**", "+=", "-=", "*=", "/=", "%=", "**=", "//=", "&=", "|=", ">>=", "<<=", "=",
     "==", "!=", ">", "<", ">=", "<=", "&", "|", "^", ">>", "<<", "(", ")", "[", "]", "{", "}", "and", "or", "in", "is", "not"]
 
 signifiers = [":", ";", ".", ",", "\n", "\t"]
