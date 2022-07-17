@@ -10,8 +10,8 @@ def main():
 
         elif i % 5 == 0:
             print("Buzz")
-            continue;
+            continue
 
-        print(i);
-
-    return 0;
+        print(i)
+        
+    return 0

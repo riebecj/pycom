@@ -1,3 +1,5 @@
+#!/usr/bin/env python3.10
+
 import sys
 import tokenise
 import compiler
@@ -70,6 +72,7 @@ print(f"[INFO] Finished compiling '{filename}';\n") if INFO else None
 
 if error != b"":
     print(red(f"error: compilation error: {error.decode('utf-8')}"))
+    print(compiledcode) if FAILPRINT else None
     exit(1)
 
 if output == b"":

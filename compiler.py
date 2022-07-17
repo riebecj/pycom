@@ -1,5 +1,4 @@
 import tokenise
-from itertools import cycle
 
 invopmap = {v: k for k, v in tokenise.tokmap.items()}
 
@@ -122,10 +121,10 @@ class Compile:
                 code += self.oktokens[i][self.value]
             elif self.oktokens[i][self.type] == "SIG":
                 if self.oktokens[i][self.value] == "NEWLINE":
-                    if self.oktokens[i-1] != ("SIG", "NEWLINE") and self.oktokens[i+1] != ("SIG", "NEWLINE"): 
+                    if self.oktokens[i-1] != ("SIG", "NEWLINE"): 
                         if self.oktokens[i-1][self.type] != "SIG" and not str(self.oktokens[i-1][self.value]).endswith(" TAB"):
                             code += ";"
-                    else: code += "\n"
+                        else: code += "\n"
 
                 if self.oktokens[i] == ("SIG", "COMMA"):
                     code += ","

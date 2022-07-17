@@ -1,5 +1,7 @@
 import tokenize
 import sys
+import refactor
+import os
 
 tokmap = {
 	"\n": "NEWLINE",
@@ -56,7 +58,7 @@ keywords = ["import", "if", "elif", "else", "for", "while", "try", "except", "fi
 "lambda", "nonlocal", "raise", "with", "yield"]
 
 blockkw = ["if", "elif", "else", "for", "while", "try", "except", "finally", "def", "class", "with"]
-
+ 
 operators = ["+", "-", "*", "/", "//", "%", "**", "+=", "-=", "*=", "/=", "%=", "**=", "//=", "&=", "|=", ">>=", "<<=", "=",
     "==", "!=", ">", "<", ">=", "<=", "&", "|", "^", ">>", "<<", "(", ")", "[", "]", "{", "}", "and", "or", "in", "is", "not"]
 
@@ -109,7 +111,10 @@ def allcharacterssame(s):
 
 def gettokens(filename: str):
 	try:
-		with open(filename, "rb") as f:
+		with open(filename, "r") as src: source = src.readlines()
+		with open("temp.py", "x") as x: pass
+		with open("temp.py", "w") as temp: temp.write(refactor.refactorforcompiler(source))
+		with open("temp.py", "rb") as f:
 			tokens = tokenize.tokenize(f.readline)
 			token_list = [t.string for t in tokens][1:-2]
 			while "" in token_list: token_list.remove("")
@@ -124,6 +129,8 @@ def gettokens(filename: str):
 					token_list[i] = (typeofcurrent, current)
 					if token_list[i][0] == "SIG" and token_list[i][1].startswith("    ") and allcharacterssame(token_list[i][1]):
 						token_list[i] = ("SIG", f"{int(len(current) / 4)} TAB")
+
+			os.remove("temp.py")
 
 			try:
 				for i in range(len(token_list)):
@@ -176,4 +183,5 @@ def gettokens(filename: str):
 
 	except FileNotFoundError:
 		print(f"tokenise.py: error: '{filename}' not found", file=sys.stderr)
+		os.remove("temp.py")
 		exit(1)
