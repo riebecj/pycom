@@ -17,6 +17,7 @@ implemented = [
     ('SIG', 'BLOCK_START'),
     ('SIG', 'BLOCK_END'),
     ('SIG', 'TYPEPOINTER'),
+    ('SIG', 'FUNCTYPEPOINTER'),
     ('SIG', 'COMMA')
 ]
 
@@ -53,19 +54,12 @@ def findlastkw(tokens, currentind):
         if tokens[i][0] == "KW":
             return tokens[i]
 
-def findlasttablevel(tokens, currentind):
-    for i in range(currentind, -1, -1):
-        if tokens[i][0] == "SIG" and str(tokens[i][1]).endswith(" TAB"):
-            return int(str(tokens[i][1]).removesuffix(" TAB"))
-    
-    return 0
+def findnextfunctypeptr(tokens: list, currentind):
+    try:
+        return tokens.index(("SIG", "FUNCTYPEPOINTER"), currentind)
 
-def findnexttablevel(tokens, currentind):
-    for i in range(currentind, len(tokens)):
-        if tokens[i][0] == "SIG" and str(tokens[i][1]).endswith(" TAB"):
-            return int(str(tokens[i][1]).removesuffix(" TAB"))
-    
-    return 0
+    except ValueError:
+        return None
 
 def parsetabamount(tabtok):
     return int(str(tabtok[1]).removesuffix(" TAB"))
@@ -96,7 +90,7 @@ class Compile:
                     gobackby = 2
 
                 if self.oktokens[i-gobackby][self.type] != "SIG" and not str(self.oktokens[i-gobackby][self.value]).endswith(" TAB"):
-                    if self.oktokens[i+1] != ("FUNC", "main") and self.oktokens[i] != ("KW", "continue"):
+                    if self.oktokens[i+1] != ("FUNC", "main") and self.oktokens[i] != ("KW", "continue") and self.oktokens[i] != ("KW", "return"):
                         code += "}"
 
             if self.oktokens[i][self.type] == "NAME" or self.oktokens[i][self.type] == "FUNCREF" or self.oktokens[i][self.type] == "VARREF":
@@ -124,7 +118,6 @@ class Compile:
                     if self.oktokens[i-1] != ("SIG", "NEWLINE"): 
                         if self.oktokens[i-1][self.type] != "SIG" and not str(self.oktokens[i-1][self.value]).endswith(" TAB"):
                             code += ";"
-                        else: code += "\n"
 
                 if self.oktokens[i] == ("SIG", "COMMA"):
                     code += ","
@@ -138,7 +131,12 @@ class Compile:
                         code += "int "
 
                     else:
-                        code += "void "
+                        indoftypedec = findnextfunctypeptr(self.oktokens, i)
+                        if indoftypedec is not None:
+                            if self.oktokens[indoftypedec + 1][self.value] in types:
+                                code += pytypetoctype[self.oktokens[indoftypedec + 1][self.value]] + " " 
+                            else:
+                                print(f"error: token #{i}: invalid type specified for function '{self.oktokens[i+1][self.value]}'")
 
                 elif self.oktokens[i][self.value] == "for":
                     itervarname = self.oktokens[i+1][self.value]
@@ -187,6 +185,8 @@ class Compile:
                     blockkw = findlastkw(self.oktokens, i)
                     if blockkw not in [('KW', 'def'), ('KW', 'else')]:
                         code += ")"
+
+            
 
         return code, self.oktokens
 

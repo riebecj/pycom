@@ -50,6 +50,7 @@ tokmap = {
 	".": "DOT",
 	",": "COMMA",
 	":": "BLOCK_START",
+	"->": "FUNCTYPEPOINTER",
 	";": "BLOCK_END"
 }
 
@@ -62,7 +63,7 @@ blockkw = ["if", "elif", "else", "for", "while", "try", "except", "finally", "de
 operators = ["+", "-", "*", "/", "//", "%", "**", "+=", "-=", "*=", "/=", "%=", "**=", "//=", "&=", "|=", ">>=", "<<=", "=",
     "==", "!=", ">", "<", ">=", "<=", "&", "|", "^", ">>", "<<", "(", ")", "[", "]", "{", "}", "and", "or", "in", "is", "not"]
 
-signifiers = [":", ";", ".", ",", "\n", "\t"]
+signifiers = [":", ";", ".", ",", "\n", "\t", "->"]
 
 types = ["str", "int", "float", "list", "dict", "set"]
 
