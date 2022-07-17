@@ -2,19 +2,16 @@ def main():
     for i in range(1, 101):
         if i % 15 == 0:
             print("Fizzbuzz")
-            continue;
+            continue
 
         elif i % 3 == 0:
             print("Fizz")
-            continue;
+            continue
 
         elif i % 5 == 0:
             print("Buzz")
             continue;
 
-        else:
-            print(i);
-
-        continue;
+        print(i);
 
     return 0;

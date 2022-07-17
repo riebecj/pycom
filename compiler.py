@@ -1,4 +1,5 @@
 import tokenise
+from itertools import cycle
 
 invopmap = {v: k for k, v in tokenise.tokmap.items()}
 
@@ -10,7 +11,7 @@ implemented = [
     ('KW', 'else'),
     ('KW', 'while'),
     ('KW', 'return'),
-
+    ('KW', 'continue'),
 
 
     ('SIG', 'NEWLINE'),
@@ -30,10 +31,10 @@ pythonbuiltins = [
 ]
 
 cfuncs = [
-    'void print(std::string str){std::cout << str << std::endl;}'
-    'void print(int istr){std::cout << istr << std::endl;}'
-    'void print(float fstr){std::cout << fstr << std::endl;}'
-    'void print(long long int llistr){std::cout << llistr << std::endl;}'
+    'void print(std::string str){std::cout << str << std::endl;}',
+    'void print(int istr){std::cout << istr << std::endl;}',
+    'void print(float fstr){std::cout << fstr << std::endl;}',
+    'void print(long long int llistr){std::cout << llistr << std::endl;}',
     'void print(long double ldstr){std::cout << ldstr << std::endl;}'
 ]
 
@@ -53,6 +54,26 @@ def findlastkw(tokens, currentind):
         if tokens[i][0] == "KW":
             return tokens[i]
 
+def findlasttablevel(tokens, currentind):
+    for i in range(currentind, -1, -1):
+        if tokens[i][0] == "SIG" and str(tokens[i][1]).endswith(" TAB"):
+            return int(str(tokens[i][1]).removesuffix(" TAB"))
+    
+    return 0
+
+def findnexttablevel(tokens, currentind):
+    for i in range(currentind, len(tokens)):
+        if tokens[i][0] == "SIG" and str(tokens[i][1]).endswith(" TAB"):
+            return int(str(tokens[i][1]).removesuffix(" TAB"))
+    
+    return 0
+
+def parsetabamount(tabtok):
+    return int(str(tabtok[1]).removesuffix(" TAB"))
+
+def removenewlinedups(x):
+    return [x[i] for i in range(len(x)) if (i==0) or (x[i] !=x[i-1]) or (x[i] != ("SIG", "NEWLINE"))]
+
 class Compile:
     def __init__(self, tokens: list):
         self.tokens = tokens
@@ -67,7 +88,18 @@ class Compile:
         for use in using: code += f"using {use};\n"
         for func in cfuncs: code += func + " "
         code += "\n"
+        
         for i in range(len(self.oktokens)):
+            if self.oktokens[i][self.type] == "KW":
+                gobackby = 1
+
+                if self.oktokens[i-1] == ("SIG", "NEWLINE"):
+                    gobackby = 2
+
+                if self.oktokens[i-gobackby][self.type] != "SIG" and not str(self.oktokens[i-gobackby][self.value]).endswith(" TAB"):
+                    if self.oktokens[i+1] != ("FUNC", "main") and self.oktokens[i] != ("KW", "continue"):
+                        code += "}"
+
             if self.oktokens[i][self.type] == "NAME" or self.oktokens[i][self.type] == "FUNCREF" or self.oktokens[i][self.type] == "VARREF":
                 code += self.oktokens[i][self.value]
             
@@ -100,8 +132,7 @@ class Compile:
 
                 elif self.oktokens[i] == ("SIG", "BLOCK_START"): code += "{"
                 elif self.oktokens[i] == ("SIG", "BLOCK_END"): code += "}"
-                elif self.oktokens[i] == ("SIG", "NEWLINE"): code += "\n"
-
+                
             elif self.oktokens[i][self.type] == "KW":
                 if self.oktokens[i][self.value] == "def":
                     if self.oktokens[i+1] == ('FUNC', 'main'):
@@ -152,12 +183,11 @@ class Compile:
                     exit(1)
 
             if i + 1 != len(self.oktokens): 
-                if self.oktokens[i+1] == ("SIG", "BLOCK_END") and self.oktokens[i] != ("SIG", "NEWLINE"): code += ";";
+                if self.oktokens[i+1] == ("SIG", "BLOCK_END") and self.oktokens[i] != ("SIG", "NEWLINE"): code += ";"
                 if self.oktokens[i+1] == ("SIG", "BLOCK_START"):
                     blockkw = findlastkw(self.oktokens, i)
                     if blockkw not in [('KW', 'def'), ('KW', 'else')]:
                         code += ")"
-
 
         return code, self.oktokens
 
@@ -174,11 +204,10 @@ class Compile:
                 if token[self.type] not in ["STRING", "NAME", "FUNC", "VAR", "SIG", "PARAM", "TYPE", "INT", "OP", "VARREF", "FUNCREF"]: continue
 
                 if token[self.type] == "OP": pass
-
-                if token[self.type] == "NAME":
-                    if token not in pythonbuiltins: continue
-                    else: pass
  
             oktokens.append(token)
+
+
+        oktokens = removenewlinedups(oktokens)
 
         return oktokens

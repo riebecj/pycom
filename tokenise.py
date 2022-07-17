@@ -55,6 +55,8 @@ keywords = ["import", "if", "elif", "else", "for", "while", "try", "except", "fi
 "break", "pass", "as", "assert", "def", "class", "await", "return", "from", "async", "await", "del", "global",
 "lambda", "nonlocal", "raise", "with", "yield"]
 
+blockkw = ["if", "elif", "else", "for", "while", "try", "except", "finally", "def", "class", "with"]
+
 operators = ["+", "-", "*", "/", "//", "%", "**", "+=", "-=", "*=", "/=", "%=", "**=", "//=", "&=", "|=", ">>=", "<<=", "=",
     "==", "!=", ">", "<", ">=", "<=", "&", "|", "^", ">>", "<<", "(", ")", "[", "]", "{", "}", "and", "or", "in", "is", "not"]
 
@@ -97,6 +99,14 @@ def wordtotoktype(word: str):
 def printtokens(tokens: list):
 	for token in tokens: print(token, end="\n")
 
+def allcharacterssame(s):
+    n = len(s)
+    for i in range(1, n):
+        if s[i] != s[0]:
+            return False
+ 
+    return True
+
 def gettokens(filename: str):
 	try:
 		with open(filename, "rb") as f:
@@ -112,8 +122,8 @@ def gettokens(filename: str):
 
 				except KeyError:
 					token_list[i] = (typeofcurrent, current)
-					if token_list[i][0] == "SIG" and token_list[i][1].isspace():
-						token_list[i] = (typeofcurrent, f"{int(len(current) / 4)} TAB")
+					if token_list[i][0] == "SIG" and token_list[i][1].startswith("    ") and allcharacterssame(token_list[i][1]):
+						token_list[i] = ("SIG", f"{int(len(current) / 4)} TAB")
 
 			try:
 				for i in range(len(token_list)):

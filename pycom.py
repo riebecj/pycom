@@ -30,18 +30,19 @@ if "-fp" in flags: FAILPRINT = True
 if "-p" in flags: PRINT = True
 if "-o" in flags: OUTPUT = True
 
-if DEBUG:
-    with open("tests/test.txt", "w") as f: f.write("")
-    with open("tests/test.txt", "a+") as f:
-        for i in tokenise.gettokens(filename):
-            f.write(str(i) + "\n")
-        exit(1)
 
 print(f"[INFO] Started compiling {filename};\n") if INFO else None
 
 start_time = time.time()
 
 compiledcode, tokens = compiler.Compile(tokenise.gettokens(filename)).iteratetokens()
+
+if DEBUG:
+    with open("tests/test.txt", "w") as f: f.write("")
+    with open("tests/test.txt", "a+") as f:
+        for i in tokens:
+            f.write(str(i) + "\n")
+        exit(1)
 
 if TOKENS:
     print(tokens)
