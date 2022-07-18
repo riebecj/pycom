@@ -12,6 +12,8 @@ implemented = [
     ('KW', 'elif'),
     ('KW', 'else'),
     ('KW', 'while'),
+    ('KW', 'match'),
+    ('KW', 'case'),
     ('KW', 'return'),
     ('KW', 'continue'),
 
@@ -165,6 +167,10 @@ class Compile:
 
                 elif self.oktokens[i][self.value] == "return":
                     code += "return "
+
+                else:
+                    print(f"error: token #{i}: keyword '{self.oktokens[i][self.value]}' is not yet implemented, sorry")
+                    exit(1)
 
             elif self.oktokens[i][self.type] == "FUNC":
                 code += self.oktokens[i][self.value]

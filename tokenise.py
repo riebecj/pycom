@@ -54,11 +54,11 @@ tokmap = {
 	";": "BLOCK_END"
 }
 
-keywords = ["import", "if", "elif", "else", "for", "while", "try", "except", "finally", "True", "False", "continue",
+keywords = ["import", "if", "elif", "else", "for", "while", "match", "case", "try", "except", "finally", "True", "False", "continue",
 "break", "pass", "as", "assert", "def", "class", "await", "return", "from", "async", "await", "del", "global",
 "lambda", "nonlocal", "raise", "with", "yield"]
 
-blockkw = ["if", "elif", "else", "for", "while", "try", "except", "finally", "def", "class", "with"]
+blockkw = ["if", "elif", "else", "for", "while", "try", "except", "finally", "def", "class", "with", "match",]
  
 operators = ["+", "-", "*", "/", "//", "%", "**", "+=", "-=", "*=", "/=", "%=", "**=", "//=", "&=", "|=", ">>=", "<<=", "=",
     "==", "!=", ">", "<", ">=", "<=", "&", "|", "^", ">>", "<<", "(", ")", "[", "]", "{", "}", "and", "or", "in", "is", "not"]
