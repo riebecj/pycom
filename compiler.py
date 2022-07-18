@@ -1,5 +1,8 @@
 import tokenise
 
+# TODO: Implement variables
+# TODO: Implement some Python builtins into the output as default - especially input() and len()
+
 invopmap = {v: k for k, v in tokenise.tokmap.items()}
 
 implemented = [
@@ -35,10 +38,12 @@ cfuncs = [
     'void print(int istr){std::cout << istr << std::endl;}',
     'void print(float fstr){std::cout << fstr << std::endl;}',
     'void print(long long int llistr){std::cout << llistr << std::endl;}',
-    'void print(long double ldstr){std::cout << ldstr << std::endl;}'
+    'void print(long double ldstr){std::cout << ldstr << std::endl;}',
+    'int len(std::string str){return str.length();}',
+    'std::string input(std::string prompt){std::cout << prompt; std::string x; std::cin >> x; return x;}',
 ]
 
-types = ["str", "int", "float"]
+types = ["str", "int", "float", "None"]
 
 includes = ["iostream", "string", "headers/range.hpp", "sstream"]
 using = ["util::lang::range"]
@@ -47,6 +52,7 @@ pytypetoctype = {
     "str": "std::string",
     "int": "long long int",
     "float": "long double",
+    "None": "void"
 }
 
 def findlastkw(tokens, currentind):
