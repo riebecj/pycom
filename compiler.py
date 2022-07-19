@@ -16,6 +16,7 @@ implemented = [
     ('KW', 'case'),
     ('KW', 'return'),
     ('KW', 'continue'),
+    ('KW', 'import'),
 
 
     ('SIG', 'NEWLINE'),
@@ -27,12 +28,19 @@ implemented = [
 ]
 
 implementedtypes = [
-    "STRING"
+    "STRING",
+]
+
+implementedmodules = [
+    "math"
 ]
 
 pythonbuiltins = [
     ('NAME', 'print'),
-    ('NAME', 'range')
+    ('NAME', 'range'),
+
+    ('METHOD', 'factorial'),
+    ('METHOD', 'sqrt')
 ]
 
 cfuncs = [
@@ -124,11 +132,14 @@ class Compile:
             elif self.oktokens[i][self.type] == "SIG":
                 if self.oktokens[i][self.value] == "NEWLINE":
                     if self.oktokens[i-1] != ("SIG", "NEWLINE"): 
-                        if self.oktokens[i-1][self.type] != "SIG" and not str(self.oktokens[i-1][self.value]).endswith(" TAB"):
+                        if self.oktokens[i-1][self.type] != "SIG" and not str(self.oktokens[i-1][self.value]).endswith(" TAB") and self.oktokens[i+1] != ("KW", "def"):
                             code += ";"
 
                 if self.oktokens[i] == ("SIG", "COMMA"):
                     code += ","
+
+                if self.oktokens[i] == ("SIG", "DOT"):
+                    code += "."
 
                 elif self.oktokens[i] == ("SIG", "BLOCK_START"): code += "{"
                 elif self.oktokens[i] == ("SIG", "BLOCK_END"): code += "}"
@@ -168,6 +179,9 @@ class Compile:
                 elif self.oktokens[i][self.value] == "return":
                     code += "return "
 
+                elif self.oktokens[i][self.value] == "import":
+                    code = f'#include "headers/py{self.oktokens[i+1][self.value]}.hpp"\n{str(self.oktokens[i+1][self.value]).capitalize()} {self.oktokens[i+1][self.value]};\n' + code
+
                 else:
                     print(f"error: token #{i}: keyword '{self.oktokens[i][self.value]}' is not yet implemented, sorry")
                     exit(1)
@@ -191,6 +205,12 @@ class Compile:
                     print(f"error: token #{i}: no type specified for param")
                     exit(1)
 
+            elif self.oktokens[i][self.type] == "IMPORTREF":
+                code += self.oktokens[i][self.value]
+
+            elif self.oktokens[i][self.type] == "METHOD":
+                code += self.oktokens[i][self.value]
+
             if i + 1 != len(self.oktokens): 
                 if self.oktokens[i+1] == ("SIG", "BLOCK_END") and self.oktokens[i] != ("SIG", "NEWLINE"): code += ";"
                 if self.oktokens[i+1] == ("SIG", "BLOCK_START"):
@@ -207,17 +227,35 @@ class Compile:
         oktokens = []
         
         for token in self.tokens:
+            if token[self.type] == "IMPORT_MODULE" and token[self.value] not in implementedmodules:
+                continue
+
+
             if token[self.type] == "SIG" and str(token[self.value]).endswith(" TAB"):
                 oktokens.append(token)
                 continue
 
+            if token in pythonbuiltins:
+                oktokens.append(token)
+                continue
+
             if token not in implemented:
-                if token[self.type] not in ["STRING", "NAME", "FUNC", "VAR", "SIG", "PARAM", "TYPE", "INT", "OP", "VARREF", "FUNCREF"]: continue
+                if token[self.type] not in ["STRING", "NAME", "FUNC", "VAR", "SIG", "PARAM", "TYPE", "INT", "OP", "VARREF", "FUNCREF", "IMPORTREF", "IMPORT_MODULE"]: continue
 
                 if token[self.type] == "OP": pass
  
             oktokens.append(token)
 
+
+        temp = []
+
+        for i in range(len(oktokens)):
+            if oktokens[i] == ("KW", "import") and oktokens[i+1][self.type] != "IMPORT_MODULE":
+                continue
+
+            temp.append(oktokens[i])
+
+        oktokens = temp
 
         oktokens = removenewlinedups(oktokens)
 

@@ -153,7 +153,8 @@ def gettokens(filename: str):
 
 					elif token_list[i][0] == "NAME":
 						if token_list[i][1] in types:
-							token_list[i] = ("TYPE", token_list[i][1])
+							if token_list[i+1] != ("OP", "LPAREN"):  
+								token_list[i] = ("TYPE", token_list[i][1])
 
 						elif token_list[i+1] == ("OP", "ASSIGN"):
 							token_list[i] = ("VAR", token_list[i][1])

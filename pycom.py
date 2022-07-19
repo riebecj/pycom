@@ -19,18 +19,26 @@ INFO = False
 RUN = False
 RUNANDDEL = False
 TOKENS = False
+RAWTOKENS = False
 FAILPRINT = False
 PRINT = False
 OUTPUT = False
+FASTMATH = False
 
 if "-d" in flags: DEBUG = True
 if "-i" in flags: INFO = True
 if "-r" in flags: RUN = True
 if "-rd" in flags: RUNANDDEL = True
 if "-t" in flags: TOKENS = True
+if "-rt" in flags: RAWTOKENS = True
 if "-fp" in flags: FAILPRINT = True
 if "-p" in flags: PRINT = True
 if "-o" in flags: OUTPUT = True
+if "-fm" in flags or "--fastmath" in flags: FASTMATH = True
+
+if RAWTOKENS:
+    print(tokenise.gettokens(filename))
+    exit()
 
 
 print(f"[INFO] Started compiling {filename};\n") if INFO else None
@@ -60,7 +68,17 @@ if OUTPUT:
 else:
     outputname = None
 
-cmd = f"echo '{compiledcode}' | g++ -O2 -w -xc++ - -o {filename.split('.')[0]}" if outputname is None else f"echo '{compiledcode}' | g++ -O2 -w -xc++ - -o {outputname}"
+if FASTMATH:
+    if outputname is None:
+        cmd = f"echo '{compiledcode}' | g++ -O3 -w -xc++ - -o {filename.split('.')[0]}"
+    else:
+        cmd = f"echo '{compiledcode}' | g++ -O3 -w -xc++ - -o {outputname}"
+
+else:
+    if outputname is None:
+        cmd = f"echo '{compiledcode}' | g++ -O2 -w -xc++ - -o {filename.split('.')[0]}"
+    else:
+        cmd = f"echo '{compiledcode}' | g++ -O2 -w -xc++ - -o {outputname}"
 
 process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
 

@@ -2,7 +2,7 @@
 
 ## Usage
 
-> ./pycom (flags) [source file]
+> ./pycom.py (flags) [source file]
 
 ### Flags
 * -i (bool):\
@@ -16,6 +16,9 @@
 
 * -o [output] (string):\
     The string specified after the flag will be the name of the generated executable. Defaults to the name of the Python file that was passed in.
+
+* -fm | --fastmath (bool):\
+    Perform aggressive optimisations speed on calculations at the cost of some precision. Defaults to off.
 
 ## What is Pycom?
 
