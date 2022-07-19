@@ -93,7 +93,7 @@ def wordtotoktype(word: str):
 	if word in keywords: return "KW"
 	elif word in operators: return "OP"
 	elif word in signifiers or word.startswith("    "): return "SIG"
-	elif word[0] == '"' or word[0] == 'f' and word[-1] == '"': return "STRING"
+	elif word[0] == '"' or word[0] == 'f' and word[-1] == '"': return "STRING" if word[0] != 'f' else "FSTRING"
 	elif word.isdigit(): return "INT"
 	elif isfloat(word): return "FLOAT"
 	else: return "NAME"

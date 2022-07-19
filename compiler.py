@@ -1,7 +1,5 @@
 import tokenise
-
-# TODO: Implement variables
-# TODO: Implement some Python builtins into the output as default - especially input() and len()
+import re
 
 invopmap = {v: k for k, v in tokenise.tokmap.items()}
 
@@ -29,6 +27,7 @@ implemented = [
 
 implementedtypes = [
     "STRING",
+    "FSTRING"
 ]
 
 implementedmodules = [
@@ -62,8 +61,32 @@ pytypetoctype = {
     "str": "std::string",
     "int": "long long int",
     "float": "long double",
-    "None": "void"
+    "None": "void",
+    "list": "std::vector<std::string>"
 }
+
+def fstringtocppformat(stringtok: str):
+
+    stringtok = stringtok[1:]
+
+    formatargs = []
+
+    for i in range(len(stringtok)):
+        if stringtok[i] == '{':
+            wi = i + 1
+            expr = ""
+            while stringtok[wi] != "}":
+                expr += stringtok[wi]
+                wi += 1
+            
+            formatargs.append(expr)
+    
+    strformatargs = ", "
+    for arg in formatargs:
+        strformatargs += arg + ", "
+
+    return re.sub("\{.*?\}", "{}", stringtok) + strformatargs
+            
 
 def findlastkw(tokens, currentind):
     for i in range(currentind, -1, -1):
@@ -96,7 +119,7 @@ class Compile:
         for include in includes: code += f'#include "{include}"\n'
         for use in using: code += f"using {use};\n"
         for func in cfuncs: code += func + " "
-        code += "\n"
+        code += "struct list {int i; std::string str; float f;};\n"
         
         for i in range(len(self.oktokens)):
             if self.oktokens[i][self.type] == "KW":
@@ -240,7 +263,7 @@ class Compile:
                 continue
 
             if token not in implemented:
-                if token[self.type] not in ["STRING", "NAME", "FUNC", "VAR", "SIG", "PARAM", "TYPE", "INT", "OP", "VARREF", "FUNCREF", "IMPORTREF", "IMPORT_MODULE"]: continue
+                if token[self.type] not in ["STRING", "FSTRING", "NAME", "FUNC", "VAR", "SIG", "PARAM", "TYPE", "INT", "OP", "VARREF", "FUNCREF", "IMPORTREF", "IMPORT_MODULE"]: continue
 
                 if token[self.type] == "OP": pass
  
