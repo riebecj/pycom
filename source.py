@@ -1,6 +1,2 @@
-def main():
-    i = "str"
-
-    print(i)
-
-    return 0
+i = "str"
+print(i)
