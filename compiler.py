@@ -129,7 +129,7 @@ class Compile:
                     gobackby = 2
 
                 if self.oktokens[i-gobackby][self.type] != "SIG" and not str(self.oktokens[i-gobackby][self.value]).endswith(" TAB"):
-                    if self.oktokens[i+1] != ("FUNC", "main") and self.oktokens[i] != ("KW", "continue") and self.oktokens[i] != ("KW", "return"):
+                    if self.oktokens[i+1] != ("FUNC", "main") and self.oktokens[i] != ("KW", "continue") and self.oktokens[i] != ("KW", "return")and self.oktokens[i] != ("KW", "import") and self.oktokens[i] != ("KW", "for"):
                         code += "}"
 
             if self.oktokens[i][self.type] == "NAME" or self.oktokens[i][self.type] == "FUNCREF" or self.oktokens[i][self.type] == "VARREF":
@@ -145,6 +145,12 @@ class Compile:
                 elif self.oktokens[i][self.value] == "in":
                     code += ": "
 
+                elif self.oktokens[i][self.value] == "or":
+                    code += " || "
+
+                elif self.oktokens[i][self.value] == "and":
+                    code += " && "
+
                 else:
                     mapped = invopmap[self.oktokens[i][self.value]] 
                     if mapped != ";":
@@ -154,7 +160,7 @@ class Compile:
                 code += self.oktokens[i][self.value]
             elif self.oktokens[i][self.type] == "SIG":
                 if self.oktokens[i][self.value] == "NEWLINE":
-                    if self.oktokens[i-1] != ("SIG", "NEWLINE"): 
+                    if i + 1 != len(self.oktokens): 
                         if self.oktokens[i-1][self.type] != "SIG" and not str(self.oktokens[i-1][self.value]).endswith(" TAB") and self.oktokens[i+1] != ("KW", "def"):
                             code += ";"
 
@@ -235,7 +241,7 @@ class Compile:
                 code += self.oktokens[i][self.value]
 
             if i + 1 != len(self.oktokens): 
-                if self.oktokens[i+1] == ("SIG", "BLOCK_END") and self.oktokens[i] != ("SIG", "NEWLINE"): code += ";"
+                if self.oktokens[i+1] == ("SIG", "BLOCK_END") and self.oktokens[i] != ("SIG", "NEWLINE") and self.oktokens[i] != ("SIG", "BLOCK_END"): code += ";"
                 if self.oktokens[i+1] == ("SIG", "BLOCK_START"):
                     blockkw = findlastkw(self.oktokens, i)
                     if blockkw not in [('KW', 'def'), ('KW', 'else')]:
