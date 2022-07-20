@@ -115,12 +115,9 @@ class Compile:
                 if self.oktokens[i-1] == ("SIG", "NEWLINE"):
                     gobackby = 2
 
-                """
                 if self.oktokens[i-gobackby][self.type] != "SIG" and not str(self.oktokens[i-gobackby][self.value]).endswith(" TAB"):
                     if self.oktokens[i+1] != ("FUNC", "main") and self.oktokens[i] != ("KW", "continue") and self.oktokens[i] != ("KW", "return")and self.oktokens[i] != ("KW", "import") and self.oktokens[i] != ("KW", "for"):
                         code += "}"
-
-                """
 
             if self.oktokens[i][self.type] == "NAME" or self.oktokens[i][self.type] == "FUNCREF" or self.oktokens[i][self.type] == "VARREF":
                 code += self.oktokens[i][self.value]
@@ -209,7 +206,7 @@ class Compile:
                 code += self.oktokens[i][self.value]
 
             elif self.oktokens[i][self.type] == "VAR":
-                code += "auto " + self.oktokens[i][self.value]
+                code += "auto " + self.oktokens[i][self.value] if self.oktokens[i-1] != ("KW", "for") else ""
 
             elif self.oktokens[i][self.type] == "PARAM":
                 if self.oktokens[i+1] == ("SIG", "TYPEPOINTER"):

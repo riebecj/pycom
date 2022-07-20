@@ -32,6 +32,13 @@ def refactorforcompiler(code: list):
         indlevel = len(line) - len(str(line).lstrip()) if not str(line).isspace() or line != "\n" else 0
         lineandindlevel.append((line, indlevel))
 
+    strippedlines = [str(line[0]).strip() for line in lineandindlevel]
+
+    definanylines = any([line.startswith("def") for line in strippedlines])
+
+    if not definanylines:
+        lineandindlevel.append((" " * int(lineandindlevel[-1][1]) + "exit(1)", 0))
+
     for i in range(len(lineandindlevel)):
         if i + 1 != len(lineandindlevel):
             if lineandindlevel[i][1] > lineandindlevel[i+1][1]:
@@ -41,13 +48,10 @@ def refactorforcompiler(code: list):
         if str(lineandindlevel[i][0]).strip().split(" ")[0] == "return" and str(lineandindlevel[i][0]).strip()[-1] != ";" and i + 1 <= len(lineandindlevel) and len(lineandindlevel) > 2:
             lineandindlevel[i] = (lineandindlevel[i][0] + ";", lineandindlevel[i][1])
 
-    strippedlines = [str(line[0]).strip() for line in lineandindlevel]
-
-    definanylines = any([line.startswith("def") for line in strippedlines])
-
     if not definanylines:
         lineandindlevel[-1] = (lineandindlevel[-1][0] + ";", lineandindlevel[-1][1])
 
     code = [line[0] for line in lineandindlevel]
+
     
     return "\n".join(code)
