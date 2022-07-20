@@ -2,6 +2,7 @@ import tokenize
 import sys
 import refactor
 import os
+import re
 
 tokmap = {
 	"\n": "NEWLINE",
@@ -74,6 +75,29 @@ funcnames = []
 importnames = []
 
 classnames = []
+
+def fstringtocppformat(stringtok: str):
+
+    if "{" not in stringtok or "}" not in stringtok:
+        return stringtok[1:]
+
+    stringtok = stringtok[1:]
+
+    formatargs = []
+
+    for i in range(len(stringtok)):
+        if stringtok[i] == '{':
+            wi = i + 1
+            expr = ""
+            while stringtok[wi] != "}":
+                expr += stringtok[wi]
+                wi += 1
+            
+            formatargs.append(expr)
+    
+    strformatargs = ", " + ", ".join(formatargs)
+
+    return "fmt::format(" + re.sub("\{.*?\}", "{}", stringtok) + strformatargs + ")"
 
 def isfloat(token: str):
 	token = str(token)
@@ -150,6 +174,9 @@ def gettokens(filename: str):
 					elif token_list[i] == ("SIG", "BLOCK_START"):
 						if token_list[i+1][1] in ["str", "int", "float", "list", "dict", "set"]:
 							token_list[i] = ("SIG", "TYPEPOINTER")
+
+					elif token_list[i][0] == "FSTRING":
+						token_list[i] = ("STRING", fstringtocppformat(token_list[i][1]))
 
 					elif token_list[i][0] == "NAME":
 						if token_list[i][1] in types:

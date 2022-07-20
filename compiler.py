@@ -54,7 +54,7 @@ cfuncs = [
 
 types = ["str", "int", "float", "None"]
 
-includes = ["iostream", "string", "headers/range.hpp", "sstream"]
+includes = ["iostream", "string", "headers/range.hpp", "sstream", "headers/fmt/format.h"]
 using = ["util::lang::range"]
 
 pytypetoctype = {
@@ -64,28 +64,6 @@ pytypetoctype = {
     "None": "void",
     "list": "std::vector<std::string>"
 }
-
-def fstringtocppformat(stringtok: str):
-
-    stringtok = stringtok[1:]
-
-    formatargs = []
-
-    for i in range(len(stringtok)):
-        if stringtok[i] == '{':
-            wi = i + 1
-            expr = ""
-            while stringtok[wi] != "}":
-                expr += stringtok[wi]
-                wi += 1
-            
-            formatargs.append(expr)
-    
-    strformatargs = ", "
-    for arg in formatargs:
-        strformatargs += arg + ", "
-
-    return re.sub("\{.*?\}", "{}", stringtok) + strformatargs
             
 
 def findlastkw(tokens, currentind):
@@ -115,7 +93,7 @@ class Compile:
         self.oktokens = self.checktokens()
 
     def iteratetokens(self):
-        code = ""
+        code = "#define FMT_HEADER_ONLY\n"
         for include in includes: code += f'#include "{include}"\n'
         for use in using: code += f"using {use};\n"
         for func in cfuncs: code += func + " "
