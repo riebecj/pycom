@@ -1,6 +1,6 @@
-import math
-
 def main():
-    print(f"the answer is {42}")
+    i = "str"
+
+    print(i)
 
     return 0

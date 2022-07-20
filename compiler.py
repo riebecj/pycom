@@ -1,5 +1,5 @@
 import tokenise
-import re
+import time
 
 invopmap = {v: k for k, v in tokenise.tokmap.items()}
 
@@ -85,10 +85,12 @@ def removenewlinedups(x):
     return [x[i] for i in range(len(x)) if (i==0) or (x[i] !=x[i-1]) or (x[i] != ("SIG", "NEWLINE"))]
 
 class Compile:
-    def __init__(self, tokens: list):
+    def __init__(self, tokens: list, flags: list, filename: str):
         self.tokens = tokens
         self.type = 0
         self.value = 1
+        self.flags = flags
+        self.filename = filename
 
         self.oktokens = self.checktokens()
 
@@ -97,7 +99,14 @@ class Compile:
         for include in includes: code += f'#include "{include}"\n'
         for use in using: code += f"using {use};\n"
         for func in cfuncs: code += func + " "
-        code += "struct list {int i; std::string str; float f;};\n"
+        code += "\n"
+
+        if ("KW", "def") not in self.oktokens and ("KW", "class") not in self.oktokens:
+            code += "int main(){"
+
+        print(f"[INFO]: Started converting {self.filename} to C++ IR;\n") if "-v" in self.flags else None
+
+        start_time = time.perf_counter()
         
         for i in range(len(self.oktokens)):
             if self.oktokens[i][self.type] == "KW":
@@ -196,6 +205,9 @@ class Compile:
             elif self.oktokens[i][self.type] == "FUNC":
                 code += self.oktokens[i][self.value]
 
+            elif self.oktokens[i][self.type] == "VAR":
+                code += "auto " + self.oktokens[i][self.value]
+
             elif self.oktokens[i][self.type] == "PARAM":
                 if self.oktokens[i+1] == ("SIG", "TYPEPOINTER"):
                     if self.oktokens[i+2][1] in types:
@@ -225,7 +237,12 @@ class Compile:
                     if blockkw not in [('KW', 'def'), ('KW', 'else')]:
                         code += ")"
 
-            
+        if ("KW", "def") not in self.oktokens and ("KW", "class") not in self.oktokens:
+            code += ";}"
+
+        end_time = time.perf_counter()
+
+        print(f"[INFO]: Converted {self.filename} to C++ IR successfully in {round(end_time-start_time, 3)}s ({round(end_time-start_time, 3) * 1000}ms)\n") if "-v" in self.flags else None
 
         return code, self.oktokens
 

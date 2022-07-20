@@ -3,6 +3,7 @@ import sys
 import refactor
 import os
 import re
+import time
 
 tokmap = {
 	"\n": "NEWLINE",
@@ -134,7 +135,12 @@ def allcharacterssame(s):
  
     return True
 
-def gettokens(filename: str):
+def gettokens(filename: str, flags: list):
+
+	print(f"[VINFO] Started tokenisation of {filename};\n") if "-v" in flags else None
+
+	start_time = time.perf_counter()
+
 	try:
 		with open(filename, "r") as src: source = src.readlines()
 		with open("temp.py", "x") as x: pass
@@ -205,8 +211,13 @@ def gettokens(filename: str):
 							elif token_list[i][1] in classnames: token_list[i] = ("CLASSREF", token_list[i][1])
 			
 			except IndexError:
+				end_time = time.perf_counter()
+				print(f"[VINFO] Successfully tokenised {filename} in {round(end_time-start_time, 3)}s ({round(end_time-start_time, 3) * 1000}ms);\n") if "-v" in flags else None
+
 				return token_list
 
+			end_time = time.perf_counter()
+			print(f"[VINFO] Successfully tokenised {filename} in {round(end_time-start_time, 3)}s ({round(end_time-start_time, 3) * 1000}ms);\n") if "-v" in flags else None
 
 			return token_list
 

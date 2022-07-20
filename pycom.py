@@ -24,9 +24,11 @@ FAILPRINT = False
 PRINT = False
 OUTPUT = False
 FASTMATH = False
+VERBOSE = False
 
 if "-d" in flags: DEBUG = True
 if "-i" in flags: INFO = True
+if "-v" in flags: VERBOSE = True; INFO = True
 if "-r" in flags: RUN = True
 if "-rd" in flags: RUNANDDEL = True
 if "-t" in flags: TOKENS = True
@@ -41,11 +43,11 @@ if RAWTOKENS:
     exit()
 
 
-print(f"[INFO] Started compiling {filename};\n") if INFO else None
+print(f"\n[INFO] Started compiling {filename};\n") if INFO else None
 
-start_time = time.time()
+start_time = time.perf_counter()
 
-compiledcode, tokens = compiler.Compile(tokenise.gettokens(filename)).iteratetokens()
+compiledcode, tokens = compiler.Compile(tokenise.gettokens(filename, flags), flags, filename).iteratetokens()
 
 if DEBUG:
     with open("tests/test.txt", "w") as f: f.write("")
@@ -84,7 +86,7 @@ process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, 
 
 output, error = process.communicate()
 
-end_time = time.time()
+end_time = time.perf_counter()
 
 print(f"[INFO] Finished compiling '{filename}';\n") if INFO else None
 
