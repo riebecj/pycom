@@ -130,6 +130,7 @@ dmypy.json
 .pyre/
 
 # Other
+test
 source
 tests/
 temp.py

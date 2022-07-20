@@ -1,5 +1,5 @@
-from keyword import kwlist
 from typing import List
+import os
 
 blockkw = ["if", "elif", "else", "for", "while", "try", "except", "finally", "def", "class", "with"]
 
@@ -10,48 +10,54 @@ def findnextkwline(lines: List[str], startind: int):
 
 
 def refactorforcompiler(code: list):
-    for index, line in enumerate(code):
-        line = list(line)
-        try:
-            if line[-1] == "\n" and line[-2] != ":":
-                line = line[:-1]
+    try:
+        for index, line in enumerate(code):
+            line = list(line)
+            try:
+                if line[-1] == "\n" and line[-2] != ":":
+                    line = line[:-1]
 
-        except IndexError:
-            continue
+            except IndexError:
+                continue
 
-        line = "".join(line)
+            line = "".join(line)
 
-        code[index] = line
+            code[index] = line
 
-    while "\n" in code:
-        code.remove("\n")
+        while "\n" in code:
+            code.remove("\n")
 
-    lineandindlevel = []
+        lineandindlevel = []
 
-    for line in code:
-        indlevel = len(line) - len(str(line).lstrip()) if not str(line).isspace() or line != "\n" else 0
-        lineandindlevel.append((line, indlevel))
+        for line in code:
+            indlevel = len(line) - len(str(line).lstrip()) if not str(line).isspace() or line != "\n" else 0
+            lineandindlevel.append((line, indlevel))
 
-    strippedlines = [str(line[0]).strip() for line in lineandindlevel]
+        strippedlines = [str(line[0]).strip() for line in lineandindlevel]
 
-    definanylines = any([line.startswith("def") for line in strippedlines])
+        definanylines = any([line.startswith("def") for line in strippedlines])
 
-    if not definanylines:
-        lineandindlevel.append((" " * int(lineandindlevel[-1][1]) + "exit(1)", 0))
+        if not definanylines:
+            lineandindlevel.append((" " * int(lineandindlevel[-1][1]) + "exit(1)", 0))
 
-    for i in range(len(lineandindlevel)):
-        if i + 1 != len(lineandindlevel):
-            if lineandindlevel[i][1] > lineandindlevel[i+1][1]:
-                blocksdown = (lineandindlevel[i][1] - lineandindlevel[i+1][1]) // 4
-                lineandindlevel[i] = (lineandindlevel[i][0] + (";" * blocksdown), lineandindlevel[i][1])
+        for i in range(len(lineandindlevel)):
+            if i + 1 != len(lineandindlevel):
+                if lineandindlevel[i][1] > lineandindlevel[i+1][1]:
+                    blocksdown = (lineandindlevel[i][1] - lineandindlevel[i+1][1]) // 4
+                    lineandindlevel[i] = (lineandindlevel[i][0] + (";" * blocksdown), lineandindlevel[i][1])
 
-        if str(lineandindlevel[i][0]).strip().split(" ")[0] == "return" and str(lineandindlevel[i][0]).strip()[-1] != ";" and i + 1 <= len(lineandindlevel) and len(lineandindlevel) > 2:
-            lineandindlevel[i] = (lineandindlevel[i][0] + ";", lineandindlevel[i][1])
+            if str(lineandindlevel[i][0]).strip().split(" ")[0] == "return" and str(lineandindlevel[i][0]).strip()[-1] != ";" and i + 1 <= len(lineandindlevel) and len(lineandindlevel) > 2:
+                lineandindlevel[i] = (lineandindlevel[i][0] + ";", lineandindlevel[i][1])
 
-    if not definanylines:
-        lineandindlevel[-1] = (lineandindlevel[-1][0] + ";", lineandindlevel[-1][1])
+        if not definanylines:
+            lineandindlevel[-1] = (lineandindlevel[-1][0] + ";", lineandindlevel[-1][1])
 
-    code = [line[0] for line in lineandindlevel]
+        code = [line[0] for line in lineandindlevel]
 
     
-    return "\n".join(code)
+        return "\n".join(code)
+
+    except Exception as e:
+        print(f"error: likely and indexing problem in 'refactorforcompiler()': {e}")
+        os.remove("temp.py")
+        exit(1)

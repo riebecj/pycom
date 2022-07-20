@@ -3,14 +3,19 @@
 import sys
 import tokenise
 import compiler
-import os, subprocess
+import os
+import subprocess
 from colorama import Fore
 import time
 
+
 def red(string): return Fore.RED + string + Fore.RESET
 
-try: filename = sys.argv[-1]
-except IndexError: filename = "source.py"
+
+try:
+    filename = sys.argv[-1]
+except IndexError:
+    filename = "source.py"
 
 flags = sys.argv[1:-1]
 
@@ -26,17 +31,29 @@ OUTPUT = False
 FASTMATH = False
 VERBOSE = False
 
-if "-d" in flags: DEBUG = True
-if "-i" in flags: INFO = True
-if "-v" in flags: VERBOSE = True; INFO = True
-if "-r" in flags: RUN = True
-if "-rd" in flags: RUNANDDEL = True
-if "-t" in flags: TOKENS = True
-if "-rt" in flags: RAWTOKENS = True
-if "-fp" in flags: FAILPRINT = True
-if "-p" in flags: PRINT = True
-if "-o" in flags: OUTPUT = True
-if "-fm" in flags or "--fastmath" in flags: FASTMATH = True
+if "-d" in flags:
+    DEBUG = True
+if "-i" in flags:
+    INFO = True
+if "-v" in flags:
+    VERBOSE = True
+    INFO = True
+if "-r" in flags:
+    RUN = True
+if "-rd" in flags:
+    RUNANDDEL = True
+if "-t" in flags:
+    TOKENS = True
+if "-rt" in flags:
+    RAWTOKENS = True
+if "-fp" in flags:
+    FAILPRINT = True
+if "-p" in flags:
+    PRINT = True
+if "-o" in flags:
+    OUTPUT = True
+if "-fm" in flags or "--fastmath" in flags:
+    FASTMATH = True
 
 if RAWTOKENS:
     print(tokenise.gettokens(filename))
@@ -47,10 +64,12 @@ print(f"\n[INFO] Started compiling {filename};\n") if INFO else None
 
 start_time = time.perf_counter()
 
-compiledcode, tokens = compiler.Compile(tokenise.gettokens(filename, flags), flags, filename).iteratetokens()
+compiledcode, tokens = compiler.Compile(tokenise.gettokens(
+    filename, flags), flags, filename).iteratetokens()
 
 if DEBUG:
-    with open("tests/test.txt", "w") as f: f.write("")
+    with open("tests/test.txt", "w") as f:
+        f.write("")
     with open("tests/test.txt", "a+") as f:
         for i in tokens:
             f.write(str(i) + "\n")
@@ -82,7 +101,8 @@ else:
     else:
         cmd = f"echo '{compiledcode}' | g++ -O2 -w -xc++ - -o {outputname}"
 
-process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+process = subprocess.Popen(cmd, stdout=subprocess.PIPE,
+                           stderr=subprocess.PIPE, shell=True)
 
 output, error = process.communicate()
 

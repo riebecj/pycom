@@ -52,9 +52,17 @@ cfuncs = [
     'std::string input(std::string prompt){std::cout << prompt; std::string x; std::cin >> x; return x;}',
 ]
 
+cstrmethods = [
+    'std::string lower(std::string str){std::string result = ""; for (auto &ch: str){int asciiofch = int(ch);if (asciiofch >= 65 && asciiofch <= 91){result = result + char(asciiofch + 32);} else {result = result + ch;}}return result;}',
+    'std::string upper(std::string str){std::string result = ""; for (auto &ch: str){int asciiofch = int(ch);if (asciiofch >= 97 && asciiofch <= 123){result = result + char(asciiofch - 32);} else {result = result + ch;}}return result;}'
+
+]
+
 types = ["str", "int", "float", "None"]
 
-includes = ["iostream", "string", "headers/range.hpp", "sstream", "headers/fmt/format.h"]
+includes = ["iostream", "string", "headers/range.hpp",
+            "sstream", "headers/fmt/format.h"]
+            
 using = ["util::lang::range"]
 
 pytypetoctype = {
@@ -62,14 +70,22 @@ pytypetoctype = {
     "int": "long long int",
     "float": "long double",
     "None": "void",
-    "list": "std::vector<std::string>"
+    "list": "strlist"
 }
-            
+
+typedefs = [
+    ("std::vector<std::string>", "strlist"),
+    ("std::vector<int>", "intlist"),
+    (("std::vector<float>", "floatlist"))
+
+]
+
 
 def findlastkw(tokens, currentind):
     for i in range(currentind, -1, -1):
         if tokens[i][0] == "KW":
             return tokens[i]
+
 
 def findnextfunctypeptr(tokens: list, currentind):
     try:
@@ -78,11 +94,14 @@ def findnextfunctypeptr(tokens: list, currentind):
     except ValueError:
         return None
 
+
 def parsetabamount(tabtok):
     return int(str(tabtok[1]).removesuffix(" TAB"))
 
+
 def removenewlinedups(x):
-    return [x[i] for i in range(len(x)) if (i==0) or (x[i] !=x[i-1]) or (x[i] != ("SIG", "NEWLINE"))]
+    return [x[i] for i in range(len(x)) if (i == 0) or (x[i] != x[i-1]) or (x[i] != ("SIG", "NEWLINE"))]
+
 
 class Compile:
     def __init__(self, tokens: list, flags: list, filename: str):
@@ -96,18 +115,26 @@ class Compile:
 
     def iteratetokens(self):
         code = "#define FMT_HEADER_ONLY\n"
-        for include in includes: code += f'#include "{include}"\n'
-        for use in using: code += f"using {use};\n"
-        for func in cfuncs: code += func + " "
+        for include in includes:
+            code += f'#include "{include}"\n'
+        for use in using:
+            code += f"using {use};\n"
+        for func in cfuncs:
+            code += func + " "
+        for strmethod in cstrmethods:
+            code += strmethod + " "
+        for typedef in typedefs:
+            code += f"typedef {typedef[0]} {typedef[1]};"
         code += "\n"
 
         if ("KW", "def") not in self.oktokens and ("KW", "class") not in self.oktokens:
             code += "int main(){"
 
-        print(f"[INFO]: Started converting {self.filename} to C++ IR;\n") if "-v" in self.flags else None
+        print(
+            f"[INFO]: Started converting {self.filename} to C++ IR;\n") if "-v" in self.flags else None
 
         start_time = time.perf_counter()
-        
+
         for i in range(len(self.oktokens)):
             if self.oktokens[i][self.type] == "KW":
                 gobackby = 1
@@ -116,12 +143,12 @@ class Compile:
                     gobackby = 2
 
                 if self.oktokens[i-gobackby][self.type] != "SIG" and not str(self.oktokens[i-gobackby][self.value]).endswith(" TAB"):
-                    if self.oktokens[i+1] != ("FUNC", "main") and self.oktokens[i] != ("KW", "continue") and self.oktokens[i] != ("KW", "return")and self.oktokens[i] != ("KW", "import") and self.oktokens[i] != ("KW", "for"):
+                    if self.oktokens[i+1] != ("FUNC", "main") and self.oktokens[i] != ("KW", "continue") and self.oktokens[i] != ("KW", "return") and self.oktokens[i] != ("KW", "import") and self.oktokens[i] != ("KW", "for"):
                         code += "}"
 
             if self.oktokens[i][self.type] == "NAME" or self.oktokens[i][self.type] == "FUNCREF" or self.oktokens[i][self.type] == "VARREF":
                 code += self.oktokens[i][self.value]
-            
+
             elif self.oktokens[i][self.type] == "OP":
                 if self.oktokens[i][self.value] == "LPAREN":
                     code += "("
@@ -139,7 +166,7 @@ class Compile:
                     code += " && "
 
                 else:
-                    mapped = invopmap[self.oktokens[i][self.value]] 
+                    mapped = invopmap[self.oktokens[i][self.value]]
                     if mapped != ";":
                         code += mapped
 
@@ -147,7 +174,7 @@ class Compile:
                 code += self.oktokens[i][self.value]
             elif self.oktokens[i][self.type] == "SIG":
                 if self.oktokens[i][self.value] == "NEWLINE":
-                    if i + 1 != len(self.oktokens): 
+                    if i + 1 != len(self.oktokens):
                         if self.oktokens[i-1][self.type] != "SIG" and not str(self.oktokens[i-1][self.value]).endswith(" TAB") and self.oktokens[i+1] != ("KW", "def"):
                             code += ";"
 
@@ -157,9 +184,11 @@ class Compile:
                 if self.oktokens[i] == ("SIG", "DOT"):
                     code += "."
 
-                elif self.oktokens[i] == ("SIG", "BLOCK_START"): code += "{"
-                elif self.oktokens[i] == ("SIG", "BLOCK_END"): code += "}"
-                
+                elif self.oktokens[i] == ("SIG", "BLOCK_START"):
+                    code += "{"
+                elif self.oktokens[i] == ("SIG", "BLOCK_END"):
+                    code += "}"
+
             elif self.oktokens[i][self.type] == "KW":
                 if self.oktokens[i][self.value] == "def":
                     if self.oktokens[i+1] == ('FUNC', 'main'):
@@ -169,9 +198,11 @@ class Compile:
                         indoftypedec = findnextfunctypeptr(self.oktokens, i)
                         if indoftypedec is not None:
                             if self.oktokens[indoftypedec + 1][self.value] in types:
-                                code += pytypetoctype[self.oktokens[indoftypedec + 1][self.value]] + " " 
+                                code += pytypetoctype[self.oktokens[indoftypedec + 1]
+                                                      [self.value]] + " "
                             else:
-                                print(f"error: token #{i}: invalid type specified for function '{self.oktokens[i+1][self.value]}'")
+                                print(
+                                    f"error: token #{i}: invalid type specified for function '{self.oktokens[i+1][self.value]}'")
 
                 elif self.oktokens[i][self.value] == "for":
                     itervarname = self.oktokens[i+1][self.value]
@@ -199,26 +230,29 @@ class Compile:
                     code = f'#include "headers/py{self.oktokens[i+1][self.value]}.hpp"\n{str(self.oktokens[i+1][self.value]).capitalize()} {self.oktokens[i+1][self.value]};\n' + code
 
                 else:
-                    print(f"error: token #{i}: keyword '{self.oktokens[i][self.value]}' is not yet implemented, sorry")
+                    print(
+                        f"error: token #{i}: keyword '{self.oktokens[i][self.value]}' is not yet implemented, sorry")
                     exit(1)
 
             elif self.oktokens[i][self.type] == "FUNC":
                 code += self.oktokens[i][self.value]
 
             elif self.oktokens[i][self.type] == "VAR":
-                code += "auto " + self.oktokens[i][self.value] if self.oktokens[i-1] != ("KW", "for") else ""
+                code += "auto " + \
+                    self.oktokens[i][self.value] if self.oktokens[i -
+                                                                  1] != ("KW", "for") else ""
 
             elif self.oktokens[i][self.type] == "PARAM":
                 if self.oktokens[i+1] == ("SIG", "TYPEPOINTER"):
                     if self.oktokens[i+2][1] in types:
-                        typeofparam = self.oktokens[i+2][1] 
-                    else: 
-                        print(f"error: token #{i}: invalid type specified for param '{self.oktokens[i][self.value]}'")
+                        typeofparam = self.oktokens[i+2][1]
+                    else:
+                        print(
+                            f"error: token #{i}: invalid type specified for param '{self.oktokens[i][self.value]}'")
                         exit(1)
                     ctypeofparam = pytypetoctype[typeofparam]
                     paramname = self.oktokens[i][self.value]
                     code += f"{ctypeofparam} {paramname}"
-
 
                 else:
                     print(f"error: token #{i}: no type specified for param")
@@ -230,8 +264,9 @@ class Compile:
             elif self.oktokens[i][self.type] == "METHOD":
                 code += self.oktokens[i][self.value]
 
-            if i + 1 != len(self.oktokens): 
-                if self.oktokens[i+1] == ("SIG", "BLOCK_END") and self.oktokens[i] != ("SIG", "NEWLINE") and self.oktokens[i] != ("SIG", "BLOCK_END"): code += ";"
+            if i + 1 != len(self.oktokens):
+                if self.oktokens[i+1] == ("SIG", "BLOCK_END") and self.oktokens[i] != ("SIG", "NEWLINE") and self.oktokens[i] != ("SIG", "BLOCK_END"):
+                    code += ";"
                 if self.oktokens[i+1] == ("SIG", "BLOCK_START"):
                     blockkw = findlastkw(self.oktokens, i)
                     if blockkw not in [('KW', 'def'), ('KW', 'else')]:
@@ -246,14 +281,12 @@ class Compile:
 
         return code, self.oktokens
 
-            
     def checktokens(self):
         oktokens = []
-        
+
         for token in self.tokens:
             if token[self.type] == "IMPORT_MODULE" and token[self.value] not in implementedmodules:
                 continue
-
 
             if token[self.type] == "SIG" and str(token[self.value]).endswith(" TAB"):
                 oktokens.append(token)
@@ -264,12 +297,13 @@ class Compile:
                 continue
 
             if token not in implemented:
-                if token[self.type] not in ["STRING", "FSTRING", "NAME", "FUNC", "VAR", "SIG", "PARAM", "TYPE", "INT", "OP", "VARREF", "FUNCREF", "IMPORTREF", "IMPORT_MODULE"]: continue
+                if token[self.type] not in ["STRING", "FSTRING", "NAME", "FUNC", "VAR", "SIG", "PARAM", "TYPE", "INT", "OP", "VARREF", "FUNCREF", "IMPORTREF", "IMPORT_MODULE"]:
+                    continue
 
-                if token[self.type] == "OP": pass
- 
+                if token[self.type] == "OP":
+                    pass
+
             oktokens.append(token)
-
 
         temp = []
 
