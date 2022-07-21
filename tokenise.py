@@ -70,6 +70,11 @@ signifiers = [":", ";", ".", ",", "\n", "\t", "->"]
 
 types = ["str", "int", "float", "list", "dict", "set"]
 
+pylistmethodtocpp = {
+    "append": "push_back",
+    "pop": "pop_back"
+}
+
 varnames = []
 
 funcnames = []
@@ -121,20 +126,24 @@ def isfloat(token: str):
 
 
 def wordtotoktype(word: str):
-    if word in keywords:
-        return "KW"
-    elif word in operators:
-        return "OP"
-    elif word in signifiers or word.startswith("    "):
-        return "SIG"
-    elif word[0] == '"' or word[0] == 'f' and word[-1] == '"':
-        return "STRING" if word[0] != 'f' else "FSTRING"
-    elif word.isdigit():
-        return "INT"
-    elif isfloat(word):
-        return "FLOAT"
-    else:
-        return "NAME"
+    try:
+        if word in keywords:
+            return "KW"
+        elif word in operators:
+            return "OP"
+        elif word in signifiers or word.startswith("    "):
+            return "SIG"
+        elif word[0] == '"' or word[0] == 'f' and word[-1] == '"':
+            return "STRING" if word[0] != 'f' else "FSTRING"
+        elif word.isdigit():
+            return "INT"
+        elif isfloat(word):
+            return "FLOAT"
+        else:
+            return "NAME"
+
+    except AttributeError:
+        return
 
 
 def printtokens(tokens: list):
@@ -153,7 +162,8 @@ def allcharacterssame(s):
 
 def gettokens(filename: str, flags: list):
 
-    print(f"[VINFO] Started tokenisation of {filename};\n") if "-v" in flags else None
+    print(
+        f"[VINFO] Started tokenisation of {filename};\n") if "-v" in flags else None
 
     start_time = time.perf_counter()
 
@@ -167,86 +177,118 @@ def gettokens(filename: str, flags: list):
         with open("temp.py", "rb") as f:
             tokens = tokenize.tokenize(f.readline)
             token_list = [t.string for t in tokens][1:-2]
-            while "" in token_list:
-                token_list.remove("")
-            for i in range(len(token_list)):
-                current = token_list[i]
-                typeofcurrent = wordtotoktype(current)
 
-                try:
-                    token_list[i] = (typeofcurrent, tokmap[current])
+        os.remove("temp.py")
 
-                except KeyError:
-                    token_list[i] = (typeofcurrent, current)
-                    if token_list[i][0] == "SIG" and token_list[i][1].startswith("    ") and allcharacterssame(token_list[i][1]):
-                        token_list[i] = ("SIG", f"{int(len(current) / 4)} TAB")
+        while "" in token_list:
+            token_list.remove("")
 
-            os.remove("temp.py")
+        for i in range(len(token_list)):
+            current = token_list[i]
+            typeofcurrent = wordtotoktype(current)
 
             try:
-                for i in range(len(token_list)):
-                    if token_list[i] == ("KW", "def"):
-                        token_list[i+1] = ("FUNC", token_list[i+1][1])
-                        funcnames.append(token_list[i+1][1])
+                token_list[i] = (typeofcurrent, tokmap[current])
 
-                    elif token_list[i][0] == ("KW", "class"):
-                        token_list[i+1] = ("CLASS", token_list[i+1][1])
-                        classnames.append(token_list[i+1][1])
+            except KeyError:
+                token_list[i] = (typeofcurrent, current)
+                if token_list[i][0] == "SIG" and token_list[i][1].startswith("    ") and allcharacterssame(token_list[i][1]):
+                    token_list[i] = ("SIG", f"{int(len(current) / 4)} TAB")
 
-                    elif token_list[i] == ("KW", "import"):
-                        token_list[i+1] = ("IMPORT_MODULE", token_list[i+1][1])
-                        importnames.append(token_list[i+1][1])
+            try:
+                if token_list[i] == ("KW", "def"):
+                    token_list[i+1] = ("FUNC", token_list[i+1][1])
+                    funcnames.append(token_list[i+1][1])
 
-                    elif token_list[i] == ("SIG", "BLOCK_START"):
+                elif token_list[i] == ("KW", "class"):
+                    token_list[i+1] = ("CLASS", token_list[i+1][1])
+                    classnames.append(token_list[i+1][1])
+
+                elif token_list[i] == ("KW", "import"):
+                    importnames.append(token_list[i+1][1])
+
+                elif token_list[i] == ("SIG", "BLOCK_START"):
+                    if i + 1 != len(token_list):
                         if token_list[i+1][1] in ["str", "int", "float", "list", "dict", "set"]:
                             token_list[i] = ("SIG", "TYPEPOINTER")
 
-                    elif token_list[i][0] == "FSTRING":
-                        token_list[i] = (
-                            "STRING", fstringtocppformat(token_list[i][1]))
+                elif token_list[i][0] == "FSTRING":
+                    token_list[i] = (
+                        "STRING", fstringtocppformat(token_list[i][1]))
 
-                    elif token_list[i][0] == "NAME":
-                        if token_list[i][1] in types:
-                            if token_list[i+1] != ("OP", "LPAREN"):
-                                token_list[i] = ("TYPE", token_list[i][1])
+                elif token_list[i] == ("OP", "LSPAREN"):
+                    token_list[i] = ("OP", "LCPAREN")
 
-                        elif token_list[i+1] == ("OP", "ASSIGN"):
-                            token_list[i] = ("VAR", token_list[i][1])
-                            varnames.append(token_list[i][1])
+                elif token_list[i] == ("OP", "RSPAREN"):
+                    token_list[i] = ("OP", "RCPAREN")
 
-                        elif token_list[i-1] == ("KW", "for"):
-                            token_list[i] = ("VAR", token_list[i][1])
-                            varnames.append(token_list[i][1])
+                elif token_list[i][0] == "NAME":
+                    if token_list[i][1] in types:
+                        if token_list[i+1] != ("OP", "LPAREN"):
+                            token_list[i] = (
+                                "TYPE", token_list[i][1])
 
-                        elif token_list[i+1] == ("SIG", "BLOCK_START"):
-                            token_list[i] = ("PARAM", token_list[i][1])
-                            varnames.append(token_list[i][1])
+                    elif token_list[i+1] == ("OP", "ASSIGN"):
+                        token_list[i] = ("VAR", token_list[i][1])
+                        varnames.append(token_list[i][1])
 
-                        elif token_list[i-1] == ("SIG", "DOT"):
+                    elif token_list[i+1] == ("SIG", "BLOCK_START") and token_list[i+2][1] in types and token_list[i+3] == ("OP", "ASSIGN"):
+                        token_list[i] = ("VAR", token_list[i][1])
+                        varnames.append(token_list[i][1])
+
+                    elif token_list[i-1] == ("KW", "for"):
+                        token_list[i] = ("VAR", token_list[i][1])
+                        varnames.append(token_list[i][1])
+
+                    elif token_list[i+1] == ("SIG", "BLOCK_START"):
+                        token_list[i] = ("PARAM", token_list[i][1])
+                        varnames.append(token_list[i][1])
+
+                    elif token_list[i-1] == ("SIG", "DOT"):
+                        if token_list[i][1] not in pylistmethodtocpp:
                             token_list[i] = ("METHOD", token_list[i][1])
 
                         else:
-                            if token_list[i][1] in varnames:
-                                token_list[i] = ("VARREF", token_list[i][1])
-                            elif token_list[i][1] in funcnames:
-                                token_list[i] = ("FUNCREF", token_list[i][1])
-                            elif token_list[i][1] in importnames:
-                                token_list[i] = ("IMPORTREF", token_list[i][1])
-                            elif token_list[i][1] in classnames:
-                                token_list[i] = ("CLASSREF", token_list[i][1])
+                            token_list[i] = ("METHOD", pylistmethodtocpp[token_list[i][1]])
+
+                    elif token_list[i-1] == ("KW", "import"):
+                        token_list[i] = ("IMPORT_MODULE", token_list[i][1])
+
+                    else:
+                        if token_list[i][1] in varnames:
+                            token_list[i] = (
+                                "VARREF", token_list[i][1])
+                        elif token_list[i][1] in funcnames:
+                            token_list[i] = (
+                                "FUNCREF", token_list[i][1])
+                        elif token_list[i][1] in importnames:
+                            token_list[i] = (
+                                "IMPORTREF", token_list[i][1])
+                        elif token_list[i][1] in classnames:
+                            token_list[i] = (
+                                "CLASSREF", token_list[i][1])
 
             except IndexError:
+
+                continue
+
                 end_time = time.perf_counter()
                 print(
                     f"[VINFO] Successfully tokenised {filename} in {round(end_time-start_time, 3)}s ({round(end_time-start_time, 3) * 1000}ms);\n") if "-v" in flags else None
 
                 return token_list
 
-            end_time = time.perf_counter()
-            print(
-                f"[VINFO] Successfully tokenised {filename} in {round(end_time-start_time, 3)}s ({round(end_time-start_time, 3) * 1000}ms);\n") if "-v" in flags else None
+        for i in range(len(token_list)):
+            if i + 1 != len(token_list):
+                if token_list[i] == ("SIG", "BLOCK_START"):
+                    if token_list[i+1][1] in ["str", "int", "float", "list", "dict", "set"]:
+                        token_list[i] = ("SIG", "TYPEPOINTER")
 
-            return token_list
+        end_time = time.perf_counter()
+        print(
+            f"[VINFO] Successfully tokenised {filename} in {round(end_time-start_time, 3)}s ({round(end_time-start_time, 3) * 1000}ms);\n") if "-v" in flags else None
+
+        return token_list
 
     except FileNotFoundError:
         print(f"tokenise.py: error: '{filename}' not found", file=sys.stderr)

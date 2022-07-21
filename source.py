@@ -1,2 +1,3 @@
-for i in range(1, 1001):
-    print(i)
+hello: list = []
+
+hello.append(3)

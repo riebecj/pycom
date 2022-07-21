@@ -56,7 +56,7 @@ if "-fm" in flags or "--fastmath" in flags:
     FASTMATH = True
 
 if RAWTOKENS:
-    print(tokenise.gettokens(filename))
+    print(tokenise.gettokens(filename, flags))
     exit()
 
 

@@ -35,11 +35,17 @@ implementedmodules = [
 ]
 
 pythonbuiltins = [
+    # Actual builtins
     ('NAME', 'print'),
     ('NAME', 'range'),
 
+    # Math lib functions
     ('METHOD', 'factorial'),
-    ('METHOD', 'sqrt')
+    ('METHOD', 'sqrt'),
+
+    # List methods
+    ('METHOD', 'push_back'),
+    ('METHOD', 'pop_back'),
 ]
 
 cfuncs = [
@@ -58,11 +64,11 @@ cstrmethods = [
 
 ]
 
-types = ["str", "int", "float", "None"]
+types = ["str", "int", "float", "list", "None"]
 
 includes = ["iostream", "string", "headers/range.hpp",
-            "sstream", "headers/fmt/format.h"]
-            
+            "sstream", "headers/fmt/format.h", "vector"]
+
 using = ["util::lang::range"]
 
 pytypetoctype = {
@@ -70,13 +76,14 @@ pytypetoctype = {
     "int": "long long int",
     "float": "long double",
     "None": "void",
-    "list": "strlist"
+    "list": "intlist"
 }
+
 
 typedefs = [
     ("std::vector<std::string>", "strlist"),
     ("std::vector<int>", "intlist"),
-    (("std::vector<float>", "floatlist"))
+    ("std::vector<float>", "floatlist")
 
 ]
 
@@ -146,7 +153,22 @@ class Compile:
                     if self.oktokens[i+1] != ("FUNC", "main") and self.oktokens[i] != ("KW", "continue") and self.oktokens[i] != ("KW", "return") and self.oktokens[i] != ("KW", "import") and self.oktokens[i] != ("KW", "for"):
                         code += "}"
 
-            if self.oktokens[i][self.type] == "NAME" or self.oktokens[i][self.type] == "FUNCREF" or self.oktokens[i][self.type] == "VARREF":
+            if self.oktokens[i][self.type] == "NAME":
+                if self.oktokens[i+1] == ('SIG', 'TYPEPOINTER'):
+                    if self.oktokens[i+2][1] in types:
+                        typeofvar = self.oktokens[i+2][1]
+                    else:
+                        print(
+                            f"error: token #{i}: invalid type specified for var '{self.oktokens[i][self.value]}'")
+                        exit(1)
+                    ctypeofvar = pytypetoctype[typeofvar]
+                    varname = self.oktokens[i][self.value]
+                    code += f"{ctypeofvar} {varname}"
+
+                else:
+                    code += self.oktokens[i][self.value]
+
+            if self.oktokens[i][self.type] == "FUNCREF" or self.oktokens[i][self.type] == "VARREF":
                 code += self.oktokens[i][self.value]
 
             elif self.oktokens[i][self.type] == "OP":
@@ -175,7 +197,7 @@ class Compile:
             elif self.oktokens[i][self.type] == "SIG":
                 if self.oktokens[i][self.value] == "NEWLINE":
                     if i + 1 != len(self.oktokens):
-                        if self.oktokens[i-1][self.type] != "SIG" and not str(self.oktokens[i-1][self.value]).endswith(" TAB") and self.oktokens[i+1] != ("KW", "def"):
+                        if self.oktokens[i-1][self.type] != "SIG" and not str(self.oktokens[i-1][self.value]).endswith(" TAB") and self.oktokens[i+1] != ("KW", "def") and self.oktokens[i-1][0] != "IMPORT_MODULE":
                             code += ";"
 
                 if self.oktokens[i] == ("SIG", "COMMA"):

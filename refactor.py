@@ -52,12 +52,11 @@ def refactorforcompiler(code: list):
         if not definanylines:
             lineandindlevel[-1] = (lineandindlevel[-1][0] + ";", lineandindlevel[-1][1])
 
-        code = [line[0] for line in lineandindlevel]
-
+        code = [line[0] for line in lineandindlevel if not str(line[0]).startswith("#")]
     
         return "\n".join(code)
 
     except Exception as e:
-        print(f"error: likely and indexing problem in 'refactorforcompiler()': {e}")
+        print(f"error: likely an indexing problem in 'refactorforcompiler()': {e}")
         os.remove("temp.py")
         exit(1)
