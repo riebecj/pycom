@@ -1,3 +1,3 @@
-hello: list = []
+import math
 
-hello.append(3)
+print(math.factorial(50))

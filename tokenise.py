@@ -68,7 +68,7 @@ operators = ["+", "-", "*", "/", "//", "%", "**", "+=", "-=", "*=", "/=", "%=", 
 
 signifiers = [":", ";", ".", ",", "\n", "\t", "->"]
 
-types = ["str", "int", "float", "list", "dict", "set"]
+types = ["str", "int", "float", "list", "dict", "set", "bool"]
 
 pylistmethodtocpp = {
     "append": "push_back",
@@ -197,11 +197,9 @@ def gettokens(filename: str, flags: list):
 
             try:
                 if token_list[i] == ("KW", "def"):
-                    token_list[i+1] = ("FUNC", token_list[i+1][1])
                     funcnames.append(token_list[i+1][1])
 
                 elif token_list[i] == ("KW", "class"):
-                    token_list[i+1] = ("CLASS", token_list[i+1][1])
                     classnames.append(token_list[i+1][1])
 
                 elif token_list[i] == ("KW", "import"):
@@ -209,7 +207,7 @@ def gettokens(filename: str, flags: list):
 
                 elif token_list[i] == ("SIG", "BLOCK_START"):
                     if i + 1 != len(token_list):
-                        if token_list[i+1][1] in ["str", "int", "float", "list", "dict", "set"]:
+                        if token_list[i+1][1] in ["str", "int", "float", "list", "dict", "set", "bool"]:
                             token_list[i] = ("SIG", "TYPEPOINTER")
 
                 elif token_list[i][0] == "FSTRING":
@@ -253,6 +251,12 @@ def gettokens(filename: str, flags: list):
 
                     elif token_list[i-1] == ("KW", "import"):
                         token_list[i] = ("IMPORT_MODULE", token_list[i][1])
+
+                    elif token_list[i-1] == ("KW", "def"):
+                        token_list[i] = ("FUNC", token_list[i][1])
+
+                    elif token_list[i-1] == ("KW", "class"):
+                        token_list[i] = ("CLASS", token_list[i][1])
 
                     else:
                         if token_list[i][1] in varnames:

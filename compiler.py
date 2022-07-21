@@ -1,5 +1,8 @@
 import tokenise
 import time
+from colorama import Fore
+
+def red(string): return Fore.RED + string + Fore.RESET
 
 invopmap = {v: k for k, v in tokenise.tokmap.items()}
 
@@ -14,7 +17,10 @@ implemented = [
     ('KW', 'case'),
     ('KW', 'return'),
     ('KW', 'continue'),
+    ('KW', 'break'),
     ('KW', 'import'),
+    ('KW', "True"),
+    ("KW", "False"),
 
 
     ('SIG', 'NEWLINE'),
@@ -31,17 +37,20 @@ implementedtypes = [
 ]
 
 implementedmodules = [
-    "math"
+    "math",
+    "numpy"
 ]
 
 pythonbuiltins = [
     # Actual builtins
     ('NAME', 'print'),
     ('NAME', 'range'),
+    ('NAME', 'int'),
 
     # Math lib functions
     ('METHOD', 'factorial'),
     ('METHOD', 'sqrt'),
+    ('METHOD', 'floor'),
 
     # List methods
     ('METHOD', 'push_back'),
@@ -54,7 +63,11 @@ cfuncs = [
     'void print(float fstr){std::cout << fstr << std::endl;}',
     'void print(long long int llistr){std::cout << llistr << std::endl;}',
     'void print(long double ldstr){std::cout << ldstr << std::endl;}',
+    'void print(bigint bigintstr){std::cout << bigintstr << std::endl;}',
     'int len(std::string str){return str.length();}',
+    'int len(std::vector<int> container){return container.size();}'
+    'int len(std::vector<std::string> container){return container.size();}'
+    'int len(std::vector<float> container){return container.size();}'
     'std::string input(std::string prompt){std::cout << prompt; std::string x; std::cin >> x; return x;}',
 ]
 
@@ -64,26 +77,28 @@ cstrmethods = [
 
 ]
 
-types = ["str", "int", "float", "list", "None"]
+types = ["str", "int", "float", "list", "bool", "None"]
 
 includes = ["iostream", "string", "headers/range.hpp",
-            "sstream", "headers/fmt/format.h", "vector"]
+            "sstream", "headers/fmt/format.h", "vector", "boost/multiprecision/cpp_int.hpp"]
 
 using = ["util::lang::range"]
 
 pytypetoctype = {
     "str": "std::string",
-    "int": "long long int",
+    "int": "bigint",
     "float": "long double",
     "None": "void",
-    "list": "intlist"
+    "list": "intlist",
+    "bool": "bool"
 }
 
 
 typedefs = [
+    ("boost::multiprecision::cpp_int", "bigint")
     ("std::vector<std::string>", "strlist"),
-    ("std::vector<int>", "intlist"),
-    ("std::vector<float>", "floatlist")
+    ("std::vector<bigint>", "intlist"),
+    ("std::vector<float>", "floatlist"),
 
 ]
 
@@ -126,13 +141,13 @@ class Compile:
             code += f'#include "{include}"\n'
         for use in using:
             code += f"using {use};\n"
-        for func in cfuncs:
-            code += func + " "
-        for strmethod in cstrmethods:
-            code += strmethod + " "
         for typedef in typedefs:
             code += f"typedef {typedef[0]} {typedef[1]};"
-        code += "\n"
+        for strmethod in cstrmethods:
+            code += strmethod + " "
+        for func in cfuncs:
+            code += func + " "
+        code += '\nstd::string operator * (std::string a, unsigned int b) {std::string output = "";while (b--) {output += a;}return output;}\n'
 
         if ("KW", "def") not in self.oktokens and ("KW", "class") not in self.oktokens:
             code += "int main(){"
@@ -143,6 +158,11 @@ class Compile:
         start_time = time.perf_counter()
 
         for i in range(len(self.oktokens)):
+
+            if self.oktokens[i][self.type] == "TYPE":
+                if self.oktokens[i+1] == ("OP", "LPAREN"):
+                    self.oktokens[i] = ("NAME", self.oktokens[i][self.value])
+
             if self.oktokens[i][self.type] == "KW":
                 gobackby = 1
 
@@ -150,8 +170,8 @@ class Compile:
                     gobackby = 2
 
                 if self.oktokens[i-gobackby][self.type] != "SIG" and not str(self.oktokens[i-gobackby][self.value]).endswith(" TAB"):
-                    if self.oktokens[i+1] != ("FUNC", "main") and self.oktokens[i] != ("KW", "continue") and self.oktokens[i] != ("KW", "return") and self.oktokens[i] != ("KW", "import") and self.oktokens[i] != ("KW", "for"):
-                        code += "}"
+                    if self.oktokens[i+1][0] != "FUNC" and self.oktokens[i] != ("KW", "continue") and self.oktokens[i] != ("KW", "return") and self.oktokens[i] != ("KW", "import") and self.oktokens[i] != ("KW", "True") and self.oktokens[i] != ("KW", "False") and self.oktokens[i] != ("KW", "for"):
+                        print(self.oktokens[i+1])
 
             if self.oktokens[i][self.type] == "NAME":
                 if self.oktokens[i+1] == ('SIG', 'TYPEPOINTER'):
@@ -159,11 +179,14 @@ class Compile:
                         typeofvar = self.oktokens[i+2][1]
                     else:
                         print(
-                            f"error: token #{i}: invalid type specified for var '{self.oktokens[i][self.value]}'")
+                            red(f"error: token #{i}: invalid type specified for var '{self.oktokens[i][self.value]}'"))
                         exit(1)
                     ctypeofvar = pytypetoctype[typeofvar]
                     varname = self.oktokens[i][self.value]
                     code += f"{ctypeofvar} {varname}"
+
+                elif self.oktokens[i+1] == ('OP', 'ASSIGN'):
+                    code += "auto " + self.oktokens[i][self.value]
 
                 else:
                     code += self.oktokens[i][self.value]
@@ -187,6 +210,9 @@ class Compile:
                 elif self.oktokens[i][self.value] == "and":
                     code += " && "
 
+                elif self.oktokens[i][self.value] == "not":
+                    code += "!"
+
                 else:
                     mapped = invopmap[self.oktokens[i][self.value]]
                     if mapped != ";":
@@ -197,7 +223,7 @@ class Compile:
             elif self.oktokens[i][self.type] == "SIG":
                 if self.oktokens[i][self.value] == "NEWLINE":
                     if i + 1 != len(self.oktokens):
-                        if self.oktokens[i-1][self.type] != "SIG" and not str(self.oktokens[i-1][self.value]).endswith(" TAB") and self.oktokens[i+1] != ("KW", "def") and self.oktokens[i-1][0] != "IMPORT_MODULE":
+                        if self.oktokens[i-1][self.type] != "SIG" and not str(self.oktokens[i-1][self.value]).endswith(" TAB") and self.oktokens[i-1][0] != "IMPORT_MODULE":
                             code += ";"
 
                 if self.oktokens[i] == ("SIG", "COMMA"):
@@ -224,7 +250,7 @@ class Compile:
                                                       [self.value]] + " "
                             else:
                                 print(
-                                    f"error: token #{i}: invalid type specified for function '{self.oktokens[i+1][self.value]}'")
+                                    red(f"error: token #{i}: invalid type specified for function '{self.oktokens[i+1][self.value]}'"))
 
                 elif self.oktokens[i][self.value] == "for":
                     itervarname = self.oktokens[i+1][self.value]
@@ -245,15 +271,24 @@ class Compile:
                 elif self.oktokens[i][self.value] == "continue":
                     code += "continue"
 
+                elif self.oktokens[i][self.value] == "continue":
+                    code += "break"
+
                 elif self.oktokens[i][self.value] == "return":
                     code += "return "
+
+                elif self.oktokens[i][self.value] == "True":
+                    code += "true "
+
+                elif self.oktokens[i][self.value] == "False":
+                    code += "false "
 
                 elif self.oktokens[i][self.value] == "import":
                     code = f'#include "headers/py{self.oktokens[i+1][self.value]}.hpp"\n{str(self.oktokens[i+1][self.value]).capitalize()} {self.oktokens[i+1][self.value]};\n' + code
 
                 else:
                     print(
-                        f"error: token #{i}: keyword '{self.oktokens[i][self.value]}' is not yet implemented, sorry")
+                        red(f"error: token #{i}: keyword '{self.oktokens[i][self.value]}' is not yet implemented, sorry"))
                     exit(1)
 
             elif self.oktokens[i][self.type] == "FUNC":
@@ -270,14 +305,14 @@ class Compile:
                         typeofparam = self.oktokens[i+2][1]
                     else:
                         print(
-                            f"error: token #{i}: invalid type specified for param '{self.oktokens[i][self.value]}'")
+                            red(f"error: token #{i}: invalid type specified for param '{self.oktokens[i][self.value]}'"))
                         exit(1)
                     ctypeofparam = pytypetoctype[typeofparam]
                     paramname = self.oktokens[i][self.value]
                     code += f"{ctypeofparam} {paramname}"
 
                 else:
-                    print(f"error: token #{i}: no type specified for param")
+                    print(red(f"error: token #{i}: no type specified for param"))
                     exit(1)
 
             elif self.oktokens[i][self.type] == "IMPORTREF":
@@ -308,7 +343,8 @@ class Compile:
 
         for token in self.tokens:
             if token[self.type] == "IMPORT_MODULE" and token[self.value] not in implementedmodules:
-                continue
+                print(red(f"error: module/library {token[self.value]} is not implemented yet, sorry'"))
+                exit(1)
 
             if token[self.type] == "SIG" and str(token[self.value]).endswith(" TAB"):
                 oktokens.append(token)
