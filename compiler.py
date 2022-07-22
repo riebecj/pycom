@@ -246,11 +246,9 @@ class Compile:
                         indoftypedec = findnextfunctypeptr(self.oktokens, i)
                         if indoftypedec is not None:
                             if self.oktokens[indoftypedec + 1][self.value] in types:
-                                code += pytypetoctype[self.oktokens[indoftypedec + 1]
-                                                      [self.value]] + " "
-                            else:
-                                print(
-                                    red(f"error: token #{i}: invalid type specified for function '{self.oktokens[i+1][self.value]}'"))
+                                code += pytypetoctype[self.oktokens[indoftypedec + 1][self.value]] + " "
+                        else:
+                            code += "auto "
 
                 elif self.oktokens[i][self.value] == "for":
                     itervarname = self.oktokens[i+1][self.value]

@@ -16,6 +16,16 @@ class Math{
             return f;
         }
 
+        int factorial(int n){
+            int f = 1;
+
+            for(int i = 1; i <= n; ++i) {
+                f *= i;
+            }
+
+            return f;
+        }
+
         long double sqrt(long double root){
             return sqrtf128(root);
         }

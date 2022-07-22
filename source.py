@@ -1,2 +1,8 @@
-for i in range(1, 1000000):
-    print(i)
+def foo():
+    x = 0
+    return x
+
+def main():
+    foo()
+
+    return 0
