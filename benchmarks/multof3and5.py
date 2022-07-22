@@ -8,7 +8,7 @@ print(total)
 # CPython (default interpreter): 9.383s
 
 # Pycom: 0.133s (70.5x faster)
-# Pycom (with fastmath mode on): 0.106s (88.5x faster)
+# Pycom (--fastmath): 0.106s (88.5x faster)
 
 # pypy: 0.495s (18.9x faster)
 

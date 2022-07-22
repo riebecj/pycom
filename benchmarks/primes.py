@@ -11,7 +11,7 @@ def is_prime(n: int) -> int:
     return 1
 
 def main():
-    total = 0
+    total: int = 0
     for i in range(1, 100001):
         total += is_prime(i)
 
@@ -20,7 +20,7 @@ def main():
 # CPython (default interpreter): 17.127s
 
 # Pycom: 4.441s (3.85x faster)
-# Pycom (with fastmath mode on): 3.994s (4.28x faster)
+# Pycom (with --fastmath): 3.994s (4.28x faster)
 
 # pypy: 4.577s (3.74x faster)
 

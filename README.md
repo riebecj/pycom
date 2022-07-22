@@ -44,3 +44,13 @@ def main():
 
     return 0
 ```
+
+## Speed benchmarks and comparisons
+
+| Benchmark | CPython | Pycom | Pycom with --fastmath | pypy | 
+| ----------- | ----------- | ----------- | ----------- | ----------- |
+| Multiples of 3 and 5 | 9.383s | 0.133s | 0.106s | 0.495s |
+| Primes | 17.127s | 4.441s | 3.994s | 4.577s |
+| Stack Operations | 8.857s | 2.132s | 1.992s | 3.113s |
+
+(All of these can be found under ./benchmarks/)

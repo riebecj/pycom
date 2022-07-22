@@ -1,3 +1,2 @@
-import math
-
-print(math.factorial(50))
+for i in range(1, 1000000):
+    print(i)

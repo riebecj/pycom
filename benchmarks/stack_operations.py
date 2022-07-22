@@ -9,7 +9,7 @@ for i in range(1, 15000001):
 # CPython (default interpreter): 8.857s
 
 # Pycom: 2.132s (4.15x faster)
-# Pycom (with fastmath mode on): 1.992s (4.44x faster)
+# Pycom (with --fastmath): 1.992s (4.44x faster)
 
 # pypy: 3.113s (2.84x faster)
 

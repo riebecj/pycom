@@ -58,16 +58,16 @@ pythonbuiltins = [
 ]
 
 cfuncs = [
-    'void print(std::string str){std::cout << str << std::endl;}',
-    'void print(int istr){std::cout << istr << std::endl;}',
-    'void print(float fstr){std::cout << fstr << std::endl;}',
-    'void print(long long int llistr){std::cout << llistr << std::endl;}',
-    'void print(long double ldstr){std::cout << ldstr << std::endl;}',
-    'void print(bigint bigintstr){std::cout << bigintstr << std::endl;}',
-    'int len(std::string str){return str.length();}',
-    'int len(std::vector<int> container){return container.size();}'
-    'int len(std::vector<std::string> container){return container.size();}'
-    'int len(std::vector<float> container){return container.size();}'
+    'void print(std::string str){std::cout << str << char(10);}',
+    'void print(int istr){std::cout << istr << char(10);}',
+    'void print(float fstr){std::cout << fstr << char(10);}',
+    'void print(long long int llistr){std::cout << llistr << char(10);}',
+    'void print(long double ldstr){std::cout << ldstr << char(10);}',
+    'void print(bigint bigintstr){std::cout << bigintstr << char(10);}',
+    'bigint len(std::string str){return str.length();}',
+    'bigint len(std::vector<bigint> container){return container.size();}'
+    'bigint len(std::vector<std::string> container){return container.size();}'
+    'bigint len(std::vector<float> container){return container.size();}'
     'std::string input(std::string prompt){std::cout << prompt; std::string x; std::cin >> x; return x;}',
 ]
 
@@ -95,7 +95,7 @@ pytypetoctype = {
 
 
 typedefs = [
-    ("boost::multiprecision::cpp_int", "bigint")
+    ("boost::multiprecision::cpp_int", "bigint"),
     ("std::vector<std::string>", "strlist"),
     ("std::vector<bigint>", "intlist"),
     ("std::vector<float>", "floatlist"),
@@ -254,7 +254,7 @@ class Compile:
 
                 elif self.oktokens[i][self.value] == "for":
                     itervarname = self.oktokens[i+1][self.value]
-                    code += f"for(auto {itervarname}"
+                    code += f"for("
 
                 elif self.oktokens[i][self.value] == "if":
                     code += "if("
@@ -295,9 +295,8 @@ class Compile:
                 code += self.oktokens[i][self.value]
 
             elif self.oktokens[i][self.type] == "VAR":
-                code += "auto " + \
-                    self.oktokens[i][self.value] if self.oktokens[i -
-                                                                  1] != ("KW", "for") else ""
+                code += "bigint " + \
+                    self.oktokens[i][self.value]
 
             elif self.oktokens[i][self.type] == "PARAM":
                 if self.oktokens[i+1] == ("SIG", "TYPEPOINTER"):
