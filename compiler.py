@@ -82,8 +82,10 @@ cstrmethods = [
 
 types = ["str", "int", "float", "list", "bool", "None"]
 
+typecomparisons = ["const std::type_info& inttype = typeid(int);", "const std::type_info& floattype = typeid(float);"]
+
 includes = ["iostream", "string", "headers/range.hpp",
-            "sstream", "headers/fmt/format.h", "vector", "boost/multiprecision/cpp_int.hpp"]
+            "sstream", "headers/fmt/format.h", "vector", "boost/multiprecision/cpp_int.hpp", "typeinfo"]
 
 using = ["util::lang::range"]
 
@@ -175,8 +177,11 @@ class Compile:
             code += f"typedef {typedef[0]} {typedef[1]};"
         for strmethod in cstrmethods:
             code += strmethod + " "
+        for typecomp in typecomparisons:
+            code += typecomp + " "
         for func in cfuncs:
             code += func + " "
+
         code += '\nstd::string operator * (std::string a, unsigned int b) {std::string output = "";while (b--) {output += a;}return output;}\n'
 
         if ("KW", "def") not in self.oktokens and ("KW", "class") not in self.oktokens:
@@ -261,16 +266,17 @@ class Compile:
                 else:
                     mapped = invopmap[self.oktokens[i][self.value]]
                     if mapped != ";":
-                        code += mapped
+                        code += " " + mapped + " "
 
             elif self.oktokens[i][self.type] == "STRING" or self.oktokens[i][self.type] == "INT":
                 code += self.oktokens[i][self.value]
             elif self.oktokens[i][self.type] == "SIG":
                 if self.oktokens[i][self.value] == "NEWLINE":
-                    code += "\n"
                     if i + 1 != len(self.oktokens):
                         if self.oktokens[i-1][self.type] != "SIG" and not str(self.oktokens[i-1][self.value]).endswith(" TAB") and self.oktokens[i-1][0] != "IMPORT_MODULE":
                             code += ";"
+
+                    code += "\n"
 
                 if self.oktokens[i][self.type] == "SIG" and str(self.oktokens[i][self.value]).endswith("TAB"):
                     code += "    " * parsetabamount(self.oktokens[i])
@@ -374,6 +380,20 @@ class Compile:
             pass
 
         end_time = time.perf_counter()
+
+        cpplines = code.split("\n")
+
+        newcpplines = []
+        
+        for line in cpplines:
+            if line.split(" ")[0] == "auto":
+                varname = line.split(" ")[1].removesuffix(";")
+                newcpplines.append(line + f"if(typeid({varname}) == inttype){{bigint {varname} {line.removeprefix('auto ' + varname)}}} else if(typeid({varname}) == floattype){{long double {varname} {line.removeprefix('auto ' + varname)}}}")
+
+            else:
+                newcpplines.append(line)
+
+        code = "\n".join(newcpplines)
 
         print(f"[INFO]: Converted {self.filename} to C++ IR successfully in {round(end_time-start_time, 3)}s ({round(end_time-start_time, 3) * 1000}ms)\n") if "-v" in self.flags else None
 

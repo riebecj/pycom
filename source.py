@@ -1,2 +1,1 @@
-num = 0
-f = 0
+print("Hello, World!")

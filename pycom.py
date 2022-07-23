@@ -63,7 +63,6 @@ if RAWTOKENS:
     print(tokenise.gettokens(filename, flags))
     exit()
 
-
 print(f"\n[INFO] Started compiling {filename};\n") if INFO else None
 
 start_time = time.perf_counter()
@@ -126,7 +125,8 @@ if error != b"":
 if output == b"":
     print(f"[INFO] Successfully compiled '{filename}' in {round(end_time-start_time, 2)}s ({round(end_time-start_time, 2) * 1000}ms)\n") if INFO else None
     if RUNANDDEL:
-        os.system(f"./{filename.split('.')[0]} && rm {filename.split('.')[0]}")
+        os.system(f"./{filename.split('.')[0]}")
+        os.system(f"rm {filename.split('.')[0]}")
 
     elif RUN:
         os.system(f"./{filename.split('.')[0]}")
