@@ -383,8 +383,10 @@ class Compile:
 
         cpplines = code.split("\n")
 
+        newcpplines = cpplines
+
+        """
         newcpplines = []
-        
         for line in cpplines:
             if line.split(" ")[0] == "auto":
                 varname = line.split(" ")[1].removesuffix(";")
@@ -392,6 +394,8 @@ class Compile:
 
             else:
                 newcpplines.append(line)
+
+        """
 
         code = "\n".join(newcpplines)
 

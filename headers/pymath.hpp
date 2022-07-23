@@ -37,6 +37,25 @@ class Math{
             return pow(e, x);
         }
 
+        long double cos(long double x){
+            return cosf128(x);
+        } long double cos(long long int x){
+            return cosf128(x);
+        }
+
+        long double sin(long double x){
+            return sinf128(x);
+        } long double sin(long long int x){
+            return sinf128(x);
+        }
+
+        long double tan(long double x){
+            return tanf128(x);
+        } long double tan(long long int x){
+            return tanf128(x);
+        }
+
+
         int floor(long double x){
             return floorf128(x);
         }
