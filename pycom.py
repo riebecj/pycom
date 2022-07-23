@@ -30,30 +30,34 @@ PRINT = False
 OUTPUT = False
 FASTMATH = False
 VERBOSE = False
+TEST = False
+CHECK = False
 
-if "-d" in flags:
+if "-d" in flags or "--debug" in flags:
     DEBUG = True
-if "-i" in flags:
+if "-i" in flags or "--info" in flags:
     INFO = True
-if "-v" in flags:
+if "-v" in flags or "--verbose" in flags:
     VERBOSE = True
     INFO = True
-if "-r" in flags:
+if "-r" in flags or "--run" in flags:
     RUN = True
-if "-rd" in flags:
+if "-rd" in flags or "--runanddelete" in flags:
     RUNANDDEL = True
-if "-t" in flags:
+if "-t" in flags or "--tokens" in flags:
     TOKENS = True
-if "-rt" in flags:
+if "-rt" in flags or "--rawtokens" in flags:
     RAWTOKENS = True
-if "-fp" in flags:
+if "-fp" in flags or "--failprint" in flags:
     FAILPRINT = True
-if "-p" in flags:
+if "-p" in flags or "--print" in flags:
     PRINT = True
-if "-o" in flags:
+if "-o" in flags or "--output" in flags:
     OUTPUT = True
 if "-fm" in flags or "--fastmath" in flags:
     FASTMATH = True
+if "-c" in flags or "--check" in flags:
+    CHECK = True
 
 if RAWTOKENS:
     print(tokenise.gettokens(filename, flags))
@@ -84,22 +88,26 @@ if PRINT:
     exit(1)
 
 if OUTPUT:
-    outputname = sys.argv[sys.argv.index("-o") + 1]
+    try:
+        outputname = sys.argv[sys.argv.index("-o") + 1]
+
+    except Exception:
+        outputname = sys.argv[sys.argv.index("--output") + 1]
 
 else:
     outputname = None
 
 if FASTMATH:
     if outputname is None:
-        cmd = f"echo '{compiledcode}' | g++ -O3 -w -xc++ - -o {filename.split('.')[0]}"
+        cmd = f"echo '{compiledcode}' | g++ -std=c++20 -O3 -w -xc++ - -o {filename.split('.')[0]}"
     else:
-        cmd = f"echo '{compiledcode}' | g++ -O3 -w -xc++ - -o {outputname}"
+        cmd = f"echo '{compiledcode}' | g++ -std=c++20 -O3 -w -xc++ - -o {outputname}"
 
 else:
     if outputname is None:
-        cmd = f"echo '{compiledcode}' | g++ -O2 -w -xc++ - -o {filename.split('.')[0]}"
+        cmd = f"echo '{compiledcode}' | g++ -std=c++20 -O2 -w -xc++ - -o {filename.split('.')[0]}"
     else:
-        cmd = f"echo '{compiledcode}' | g++ -O2 -w -xc++ - -o {outputname}"
+        cmd = f"echo '{compiledcode}' | g++ -std=c++20 -O2 -w -xc++ - -o {outputname}"
 
 process = subprocess.Popen(cmd, stdout=subprocess.PIPE,
                            stderr=subprocess.PIPE, shell=True)

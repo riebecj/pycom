@@ -1,7 +1,7 @@
 # I am perfectly aware that this is a terrible algorithm for determining if a number is prime, this is just a 
 # test for relative performance.
 
-def is_prime(n: int) -> int:
+def is_prime(n):
     if n == 1:
         return 0
     for i in range(2, n):
@@ -11,7 +11,7 @@ def is_prime(n: int) -> int:
     return 1
 
 def main():
-    total: int = 0
+    total = 0
     for i in range(1, 100001):
         total += is_prime(i)
 

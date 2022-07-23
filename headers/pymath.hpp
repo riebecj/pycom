@@ -16,7 +16,7 @@ class Math{
             return f;
         }
 
-        int factorial(int n){
+        int factorial(short n){
             int f = 1;
 
             for(int i = 1; i <= n; ++i) {
@@ -39,5 +39,9 @@ class Math{
 
         int floor(long double x){
             return floorf128(x);
+        }
+
+        int ceil(long double x){
+            return ceilf128(x);
         }
 };

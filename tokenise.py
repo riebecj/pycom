@@ -75,7 +75,7 @@ pylistmethodtocpp = {
     "pop": "pop_back"
 }
 
-varnames = []
+varnames = ["str", "int", "float", "list", "dict", "set", "bool"]
 
 funcnames = []
 
@@ -107,6 +107,10 @@ def fstringtocppformat(stringtok: str):
 
     return "fmt::format(" + re.sub("\{.*?\}", "{}", stringtok) + strformatargs + ")"
 
+def findlastkw(tokens, currentind):
+    for i in range(currentind, -1, -1):
+        if tokens[i][0] == "KW":
+            return tokens[i]
 
 def isfloat(token: str):
     token = str(token)
@@ -214,12 +218,6 @@ def gettokens(filename: str, flags: list):
                     token_list[i] = (
                         "STRING", fstringtocppformat(token_list[i][1]))
 
-                elif token_list[i] == ("OP", "LSPAREN"):
-                    token_list[i] = ("OP", "LCPAREN")
-
-                elif token_list[i] == ("OP", "RSPAREN"):
-                    token_list[i] = ("OP", "RCPAREN")
-
                 elif token_list[i][0] == "NAME":
                     if token_list[i][1] in types:
                         if token_list[i+1] != ("OP", "LPAREN"):
@@ -287,6 +285,40 @@ def gettokens(filename: str, flags: list):
                 if token_list[i] == ("SIG", "BLOCK_START"):
                     if token_list[i+1][1] in ["str", "int", "float", "list", "dict", "set"]:
                         token_list[i] = ("SIG", "TYPEPOINTER")
+
+        for i in range(len(token_list)):
+            if i + 1 != len(token_list) and i + 2 != len(token_list):
+                if token_list[i+1] == ("OP", "ASSIGN") and token_list[i][1] not in varnames and token_list[i][0] != "OP":
+                    token_list[i] = ("VAR", token_list[i][1])
+                    varnames.append(token_list[i][1])
+
+                elif token_list[i+1] == ("SIG", "TYPEPOINTER") and token_list[i+2][1] in types and token_list[i+3] == ("OP", "ASSIGN"):
+                    token_list[i] = ("VAR", token_list[i][1])
+                    varnames.append(token_list[i][1])
+
+                elif token_list[i-1] == ("KW", "for"):
+                    token_list[i] = ("VAR", token_list[i][1])
+                    varnames.append(token_list[i][1])
+
+                if token_list[i][0] != "INT" and findlastkw(token_list, i) == ("KW", "def"): 
+                    if token_list[i-1] == ("OP", "LPAREN") and token_list[i-2][0] == "FUNC" and token_list[i] != ("OP", "RPAREN") and token_list[i][1] not in types:
+                        token_list[i] = ("PARAM", token_list[i][1])
+                        varnames.append(token_list[i][1])
+
+                    elif token_list[i+1] == ("OP", "RPAREN") and token_list[i+2] == ("SIG", "BLOCK_START") and token_list[i] != ("OP", "LPAREN") and token_list[i][1] not in types:
+                        token_list[i] = ("PARAM", token_list[i][1])
+                        varnames.append(token_list[i][1])
+
+                    elif token_list[i+1] == ("SIG", "COMMA") and token_list[i-1] == ("SIG", "COMMA") and token_list[i][1] not in types:
+                        token_list[i] = ("PARAM", token_list[i][1])
+                        varnames.append(token_list[i][1])
+
+                    if i + 3 != len(token_list):
+                        if token_list[i+1] == ("SIG", "TYPEPOINTER") and token_list[i+2] in types and token_list[i+3] != ("OP", "ASSIGN") and token_list[i][1] not in types:
+                            token_list[i] = ("PARAM", token_list[i][1])
+                            varnames.append(token_list[i][1])
+
+                    
 
         end_time = time.perf_counter()
         print(

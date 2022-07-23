@@ -2,6 +2,8 @@ import tokenise
 import time
 from colorama import Fore
 
+# TODO: Very important: ALWAYS make tokens ('OP', 'LSPAREN') and ('OP', 'RSPAREN') equal to '[' and ']' unless special case, not the other way
+
 def red(string): return Fore.RED + string + Fore.RESET
 
 invopmap = {v: k for k, v in tokenise.tokmap.items()}
@@ -46,6 +48,7 @@ pythonbuiltins = [
     ('NAME', 'print'),
     ('NAME', 'range'),
     ('NAME', 'int'),
+    ('NAME', 'exit'),
 
     # Math lib functions
     ('METHOD', 'factorial'),
@@ -108,6 +111,33 @@ def findlastkw(tokens, currentind):
         if tokens[i][0] == "KW":
             return tokens[i]
 
+def findlastopind(tokens, currentind, find = None):
+    for i in range(currentind, -1, -1):
+        if tokens[i][0] == "OP":
+            if find is not None:
+                if tokens[i][1] == find:
+                    return i
+
+                else:
+                    continue
+
+            else:
+                return None
+
+def findnextopind(tokens, currentind, find = None):
+    for i in range(currentind, len(tokens)):
+        if tokens[i][0] == "OP":
+            if find is not None:
+                if tokens[i][1] == find:
+                    return i
+
+                else:
+                    continue
+
+            else:
+                return None
+
+
 
 def findnextfunctypeptr(tokens: list, currentind):
     try:
@@ -150,7 +180,7 @@ class Compile:
         code += '\nstd::string operator * (std::string a, unsigned int b) {std::string output = "";while (b--) {output += a;}return output;}\n'
 
         if ("KW", "def") not in self.oktokens and ("KW", "class") not in self.oktokens:
-            code += "int main(){"
+            code += "int main(){\n"
 
         print(
             f"[INFO]: Started converting {self.filename} to C++ IR;\n") if "-v" in self.flags else None
@@ -173,7 +203,7 @@ class Compile:
                     if self.oktokens[i+1][0] != "FUNC" and self.oktokens[i] != ("KW", "continue") and self.oktokens[i] != ("KW", "return") and self.oktokens[i] != ("KW", "import") and self.oktokens[i] != ("KW", "True") and self.oktokens[i] != ("KW", "False") and self.oktokens[i] != ("KW", "for"):
                         print(self.oktokens[i+1])
 
-            if self.oktokens[i][self.type] == "NAME":
+            if self.oktokens[i][self.type] == "VAR":
                 if self.oktokens[i+1] == ('SIG', 'TYPEPOINTER'):
                     if self.oktokens[i+2][1] in types:
                         typeofvar = self.oktokens[i+2][1]
@@ -185,11 +215,9 @@ class Compile:
                     varname = self.oktokens[i][self.value]
                     code += f"{ctypeofvar} {varname}"
 
-                elif self.oktokens[i+1] == ('OP', 'ASSIGN'):
-                    code += "auto " + self.oktokens[i][self.value]
-
                 else:
-                    code += self.oktokens[i][self.value]
+                    code += f"auto {self.oktokens[i][self.value]}"
+
 
             if self.oktokens[i][self.type] == "FUNCREF" or self.oktokens[i][self.type] == "VARREF":
                 code += self.oktokens[i][self.value]
@@ -200,6 +228,23 @@ class Compile:
 
                 elif self.oktokens[i][self.value] == "RPAREN":
                     code += ")"
+
+                elif self.oktokens[i][self.value] == "LSPAREN":
+                    if self.oktokens[i-1][self.type] != "NAME":
+                        code += "{"
+
+                    else:
+                        code += "["
+                        srsparenind = findnextopind(self.oktokens, i, "RSPAREN")
+                        if srsparenind is not None:
+                            self.oktokens[srsparenind] = ("OP", "SRSPAREN")
+
+
+                elif self.oktokens[i][self.value] == "RSPAREN":
+                    code += "}"
+
+                elif self.oktokens[i][self.value] == "SRSPAREN":
+                    code += "]"
 
                 elif self.oktokens[i][self.value] == "in":
                     code += ": "
@@ -222,9 +267,13 @@ class Compile:
                 code += self.oktokens[i][self.value]
             elif self.oktokens[i][self.type] == "SIG":
                 if self.oktokens[i][self.value] == "NEWLINE":
+                    code += "\n"
                     if i + 1 != len(self.oktokens):
                         if self.oktokens[i-1][self.type] != "SIG" and not str(self.oktokens[i-1][self.value]).endswith(" TAB") and self.oktokens[i-1][0] != "IMPORT_MODULE":
                             code += ";"
+
+                if self.oktokens[i][self.type] == "SIG" and str(self.oktokens[i][self.value]).endswith("TAB"):
+                    code += "    " * parsetabamount(self.oktokens[i])
 
                 if self.oktokens[i] == ("SIG", "COMMA"):
                     code += ","
@@ -289,12 +338,8 @@ class Compile:
                         red(f"error: token #{i}: keyword '{self.oktokens[i][self.value]}' is not yet implemented, sorry"))
                     exit(1)
 
-            elif self.oktokens[i][self.type] == "FUNC":
+            elif self.oktokens[i][self.type] == "FUNC" or self.oktokens[i][self.type] == "NAME":
                 code += self.oktokens[i][self.value]
-
-            elif self.oktokens[i][self.type] == "VAR":
-                code += "bigint " + \
-                    self.oktokens[i][self.value]
 
             elif self.oktokens[i][self.type] == "PARAM":
                 if self.oktokens[i+1] == ("SIG", "TYPEPOINTER"):
@@ -309,8 +354,7 @@ class Compile:
                     code += f"{ctypeofparam} {paramname}"
 
                 else:
-                    print(red(f"error: token #{i}: no type specified for param"))
-                    exit(1)
+                    code += f"auto {self.oktokens[i][self.value]}"
 
             elif self.oktokens[i][self.type] == "IMPORTREF":
                 code += self.oktokens[i][self.value]
