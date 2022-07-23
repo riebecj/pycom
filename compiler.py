@@ -58,26 +58,16 @@ pythonbuiltins = [
     # List methods
     ('METHOD', 'push_back'),
     ('METHOD', 'pop_back'),
+
+    # String methods
+    ('METHOD', 'replace'),
+    ('METHOD', 'lower'),
+    ('METHOD', 'upper')
 ]
 
-cfuncs = [
-    'void print(std::string str){std::cout << str << char(10);}',
-    'void print(int istr){std::cout << istr << char(10);}',
-    'void print(float fstr){std::cout << fstr << char(10);}',
-    'void print(long long int llistr){std::cout << llistr << char(10);}',
-    'void print(long double ldstr){std::cout << ldstr << char(10);}',
-    'void print(bigint bigintstr){std::cout << bigintstr << char(10);}',
-    'bigint len(std::string str){return str.length();}',
-    'bigint len(std::vector<bigint> container){return container.size();}'
-    'bigint len(std::vector<std::string> container){return container.size();}'
-    'bigint len(std::vector<float> container){return container.size();}'
-    'std::string input(std::string prompt){std::cout << prompt; std::string x; std::cin >> x; return x;}',
-]
-
-cstrmethods = [
-    'std::string lower(std::string str){std::string result = ""; for (auto &ch: str){int asciiofch = int(ch);if (asciiofch >= 65 && asciiofch <= 91){result = result + char(asciiofch + 32);} else {result = result + ch;}}return result;}',
-    'std::string upper(std::string str){std::string result = ""; for (auto &ch: str){int asciiofch = int(ch);if (asciiofch >= 97 && asciiofch <= 123){result = result + char(asciiofch - 32);} else {result = result + ch;}}return result;}'
-
+funcmethods = [
+    ('METHOD', 'lower'),
+    ('METHOD', 'upper')
 ]
 
 types = ["str", "int", "float", "list", "bool", "None"]
@@ -85,7 +75,7 @@ types = ["str", "int", "float", "list", "bool", "None"]
 typecomparisons = ["const std::type_info& inttype = typeid(int);", "const std::type_info& floattype = typeid(float);"]
 
 includes = ["iostream", "string", "headers/range.hpp",
-            "sstream", "headers/fmt/format.h", "vector", "boost/multiprecision/cpp_int.hpp", "typeinfo"]
+            "sstream", "headers/fmt/format.h", "vector", "boost/multiprecision/cpp_int.hpp", "typeinfo", "headers/stdpy.hpp"]
 
 using = ["util::lang::range"]
 
@@ -175,12 +165,8 @@ class Compile:
             code += f"using {use};\n"
         for typedef in typedefs:
             code += f"typedef {typedef[0]} {typedef[1]};"
-        for strmethod in cstrmethods:
-            code += strmethod + " "
         for typecomp in typecomparisons:
             code += typecomp + " "
-        for func in cfuncs:
-            code += func + " "
 
         code += '\nstd::string operator * (std::string a, unsigned int b) {std::string output = "";while (b--) {output += a;}return output;}\n'
 
@@ -366,7 +352,13 @@ class Compile:
                 code += self.oktokens[i][self.value]
 
             elif self.oktokens[i][self.type] == "METHOD":
-                code += self.oktokens[i][self.value]
+                if self.oktokens[i] in funcmethods:
+                    methodname = self.oktokens[i][self.value]
+                    paramname = self.oktokens[i-2][self.value]
+                    code += f"{methodname}({paramname})"
+
+                else:
+                    code += self.oktokens[i][self.value]
 
             if i + 1 != len(self.oktokens):
                 if self.oktokens[i+1] == ("SIG", "BLOCK_END") and self.oktokens[i] != ("SIG", "NEWLINE") and self.oktokens[i] != ("SIG", "BLOCK_END"):

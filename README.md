@@ -54,3 +54,15 @@ def main():
 | Stack Operations | 8.857s | 2.132s | 1.992s | 3.113s |
 
 (All of these can be found under ./benchmarks/)
+
+## Supported Features
+
+- All 'turing complete' features of Python: if, else, for, while, etc.
+- f'' strings
+- Some in built functions
+- Some math library functions
+
+## Not supported yet
+
+- Pythonic ways of writing certain blocks (list comprehension, one line if...else)
+- A lot of libraries included in stdlib
