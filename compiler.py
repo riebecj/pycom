@@ -2,8 +2,6 @@ import tokenise
 import time
 from colorama import Fore
 
-# TODO: Very important: ALWAYS make tokens ('OP', 'LSPAREN') and ('OP', 'RSPAREN') equal to '[' and ']' unless special case, not the other way
-
 def red(string): return Fore.RED + string + Fore.RESET
 
 invopmap = {v: k for k, v in tokenise.tokmap.items()}
