@@ -1,1 +1,1 @@
-print("Hello") if 3 == 3 else None
+print("Hello")
