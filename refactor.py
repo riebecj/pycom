@@ -8,8 +8,26 @@ def findnextkwline(lines: List[str], startind: int):
         if lines[i].split(" ")[0] in blockkw:
             return lines[i]
 
+def listcomptocppfor(line: str, mode = "translate"):
+    try:
+        varname = line.split("=", 1)[0].strip().split(":")[0].strip()
+
+        listcomp = line.split("=", 1)[1].strip().removeprefix("[").removesuffix("]")
+
+        forinit = listcomp.split("for", 1)[1].strip()
+
+        foritername = forinit.split(" ", 1)[0].strip()
+
+        forbody = listcomp.split("for", 1)[0].strip()
+
+        return f"{varname}: list = []\nfor {forinit}:\n    {varname}.append({forbody});" if mode == "translate" else foritername
+
+    except Exception:
+        return None
+
 
 def refactorforcompiler(code: list):
+    if code == []: return ";"
     try:
         for index, line in enumerate(code):
             line = list(line)
@@ -48,6 +66,9 @@ def refactorforcompiler(code: list):
 
             if str(lineandindlevel[i][0]).strip().split(" ")[0] == "return" and str(lineandindlevel[i][0]).strip()[-1] != ";" and i + 1 <= len(lineandindlevel) and len(lineandindlevel) > 2:
                 lineandindlevel[i] = (lineandindlevel[i][0] + ";", lineandindlevel[i][1])
+
+            if listcomptocppfor(str(lineandindlevel[i][0]).strip()) is not None:
+                lineandindlevel[i] = (listcomptocppfor(str(lineandindlevel[i][0]).strip()), lineandindlevel[i][1])
 
         if not definanylines:
             lineandindlevel[-1] = (lineandindlevel[-1][0] + ";", lineandindlevel[-1][1])

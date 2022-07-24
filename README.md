@@ -37,12 +37,10 @@ What Pycom supports and is good at:
 High iteration loops:
 
 ```
-def main():
-    for i in range(1, 1000001):
-        if i % 3 == 0:
-            print(i)
+for i in range(1, 1000001):
+    if i % 3 == 0:
+        print(i)
 
-    return 0
 ```
 
 ## Speed benchmarks and comparisons
@@ -61,8 +59,9 @@ def main():
 - f'' strings
 - Some in built functions
 - Some math library functions
+- List comprehensions
 
 ## Not supported yet
 
-- Pythonic ways of writing certain blocks (list comprehension, one line if...else)
+- Pythonic ways of writing certain blocks (one line if...else, etc.)
 - A lot of libraries included in stdlib

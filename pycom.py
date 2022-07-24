@@ -8,14 +8,9 @@ import subprocess
 from colorama import Fore
 import time
 
-
 def red(string): return Fore.RED + string + Fore.RESET
 
-
-try:
-    filename = sys.argv[-1]
-except IndexError:
-    filename = "source.py"
+filename = sys.argv[-1]
 
 flags = sys.argv[1:-1]
 
@@ -62,6 +57,7 @@ if "-c" in flags or "--check" in flags:
 if RAWTOKENS:
     print(tokenise.gettokens(filename, flags))
     exit()
+
 
 print(f"\n[INFO] Started compiling {filename};\n") if INFO else None
 
