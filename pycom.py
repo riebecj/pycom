@@ -68,9 +68,9 @@ compiledcode, tokens = compiler.Compile(tokenise.gettokens(
     filename, flags), flags, filename).iteratetokens()
 
 if DEBUG:
-    with open("tests/test.txt", "w") as f:
+    with open("temptests/test.txt", "w") as f:
         f.write("")
-    with open("tests/test.txt", "a+") as f:
+    with open("temptests/test.txt", "a+") as f:
         for i in tokens:
             f.write(str(i) + "\n")
         exit(1)
@@ -116,12 +116,17 @@ print(f"[INFO] Finished compiling '{filename}';\n") if INFO else None
 
 if error != b"":
     errorstr = errors.cpperrortopycomerror(error.decode('utf-8'))
-    print(red(f"error: compilation error: {errorstr}"))
+    print(red(f"error: compilation error: {errorstr}")) if not CHECK else None
+    print(red(f"[INFO] Errors in the compilation of '{filename}'; unsuccessful check")) if CHECK else None
+    
+
     print(compiledcode) if FAILPRINT else None
     exit(1)
 
 if output == b"":
-    print(f"[INFO] Successfully compiled '{filename}' in {round(end_time-start_time, 2)}s ({round(end_time-start_time, 2) * 1000}ms)\n") if INFO else None
+    print(f"[INFO] Successfully compiled '{filename}' in {round(end_time-start_time, 2)}s ({round(end_time-start_time, 2) * 1000}ms)\n") if INFO and not CHECK else None
+    print(f"[INFO] No errors in the compilation of '{filename}'; successful check"); os.system(f"rm {filename.split('.')[0]}"); exit(1) if CHECK else None
+    
     if RUNANDDEL:
         os.system(f"./{filename.split('.')[0]}")
         os.system(f"rm {filename.split('.')[0]}")

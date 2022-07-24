@@ -68,7 +68,7 @@ operators = ["+", "-", "*", "/", "//", "%", "**", "+=", "-=", "*=", "/=", "%=", 
 
 signifiers = [":", ";", ".", ",", "\n", "\t", "->"]
 
-types = ["str", "int", "float", "list", "dict", "set", "bool"]
+types = ["str", "int", "float", "list", "dict", "set", "bool", "strlist"]
 
 pylistmethodtocpp = {
     "append": "push_back",
@@ -211,7 +211,7 @@ def gettokens(filename: str, flags: list):
 
                 elif token_list[i] == ("SIG", "BLOCK_START"):
                     if i + 1 != len(token_list):
-                        if token_list[i+1][1] in ["str", "int", "float", "list", "dict", "set", "bool"]:
+                        if token_list[i+1][1] in types:
                             token_list[i] = ("SIG", "TYPEPOINTER")
 
                 elif token_list[i][0] == "FSTRING":
@@ -283,12 +283,12 @@ def gettokens(filename: str, flags: list):
         for i in range(len(token_list)):
             if i + 1 != len(token_list):
                 if token_list[i] == ("SIG", "BLOCK_START"):
-                    if token_list[i+1][1] in ["str", "int", "float", "list", "dict", "set"]:
+                    if token_list[i+1][1] in types:
                         token_list[i] = ("SIG", "TYPEPOINTER")
 
         for i in range(len(token_list)):
             if i + 1 != len(token_list) and i + 2 != len(token_list):
-                if token_list[i+1] == ("OP", "ASSIGN") and token_list[i][1] not in varnames and token_list[i][0] != "OP":
+                if token_list[i+1] == ("OP", "ASSIGN") and token_list[i][1] not in varnames and token_list[i][0] != "OP" and token_list[i][1] not in types:
                     token_list[i] = ("VAR", token_list[i][1])
                     varnames.append(token_list[i][1])
 

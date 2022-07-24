@@ -132,5 +132,5 @@ dmypy.json
 # Other
 test
 source
-tests/
+temptests/
 temp.py

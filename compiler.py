@@ -58,17 +58,13 @@ pythonbuiltins = [
     ('METHOD', 'pop_back'),
 
     # String methods
-    ('METHOD', 'replace'),
     ('METHOD', 'lower'),
-    ('METHOD', 'upper')
+    ('METHOD', 'upper'),
+    ('METHOD', 'startswith'),
+    ('METHOD', 'endswith')
 ]
 
-funcmethods = [
-    ('METHOD', 'lower'),
-    ('METHOD', 'upper')
-]
-
-types = ["str", "int", "float", "list", "bool", "None"]
+types = ["str", "int", "float", "list", "bool", "strlist", "None"]
 
 typecomparisons = ["const std::type_info& inttype = typeid(int);", "const std::type_info& floattype = typeid(float);"]
 
@@ -79,6 +75,7 @@ using = ["util::lang::range"]
 
 pytypetoctype = {
     "str": "pystring",
+    "strlist": "strlist",
     "int": "bigint",
     "float": "long double",
     "None": "void",

@@ -57,6 +57,9 @@ def refactorforcompiler(code: list):
 
         if not definanylines:
             lineandindlevel.append((" " * int(lineandindlevel[-1][1]) + "exit(1)", 0))
+        
+        else:
+            lineandindlevel.append((" " * int(lineandindlevel[-1][1]) + "exit(1);", 4))
 
         for i in range(len(lineandindlevel)):
             if i + 1 != len(lineandindlevel):
@@ -69,6 +72,13 @@ def refactorforcompiler(code: list):
 
             if listcomptocppfor(str(lineandindlevel[i][0]).strip()) is not None:
                 lineandindlevel[i] = (listcomptocppfor(str(lineandindlevel[i][0]).strip()), lineandindlevel[i][1])
+
+            if "=" in str(lineandindlevel[i][0]).strip():
+                if str(lineandindlevel[i][0]).strip().split("=", 1)[1].strip().startswith('["'):
+                    lineandindlevel[i] = (str(lineandindlevel[i][0]).strip().split("=", 1)[0] + ":strlist = " + str(lineandindlevel[i][0]).strip().split("=", 1)[1], lineandindlevel[i][1])
+
+                elif str(lineandindlevel[i][0]).strip().split("=", 1)[1].strip().startswith('['):
+                    lineandindlevel[i] = (str(lineandindlevel[i][0]).strip().split("=", 1)[0] + ":list = " + str(lineandindlevel[i][0]).strip().split("=", 1)[1], lineandindlevel[i][1])
 
         if not definanylines:
             lineandindlevel[-1] = (lineandindlevel[-1][0] + ";", lineandindlevel[-1][1])

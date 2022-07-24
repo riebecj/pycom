@@ -28,6 +28,11 @@ void print(long double ldstr){
 void print(bigint bigintstr){
     std::cout << bigintstr << char(10);
 }
+
+void print(bool bstr){
+    std::cout << bstr << char(10);
+}
+
 bigint len(std::string str){
     return str.length();
 }

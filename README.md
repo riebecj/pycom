@@ -20,6 +20,17 @@
 * -fm | --fastmath (bool):\
     Perform aggressive optimisations speed on calculations at the cost of some precision. Defaults to off.
 
+## Installation
+
+Simply:
+> git clone https://github.com/Omyyyy/pycom.git\
+> cd pycom\
+> pip install -r requirements.txt
+
+### Run tests
+
+> python3 runtests.py
+
 ## What is Pycom?
 
 Pycom is effectively a compiler for Python code, bringing it down to a native executable with C++ as 'intermediate representation'. It supports all of the BASIC-like syntax of Python along with a lot of the standard library and inbuilt functions. To see what is currently supported and not supported, check the 'Examples' section below.
@@ -40,6 +51,25 @@ High iteration loops:
 for i in range(1, 1000001):
     if i % 3 == 0:
         print(i)
+
+```
+
+```
+def is_prime(n):
+    if n == 1:
+        return 0
+    for i in range(2, n):
+        if n%i == 0:
+            return 0
+
+    return 1
+
+def main():
+    total = 0
+    for i in range(1, 101):
+        total += is_prime(i)
+
+    print(total)
 
 ```
 
