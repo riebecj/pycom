@@ -1,3 +1,3 @@
-s: str = "Hello"
+import math
 
-print(s.lower())
+print(math.factorial(100000))
