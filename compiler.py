@@ -42,36 +42,6 @@ implementedmodules = [
     "numpy"
 ]
 
-pythonbuiltins = [
-    # Actual builtins
-    ('NAME', 'print'),
-    ('NAME', 'range'),
-    ('NAME', 'int'),
-    ('NAME', 'exit'),
-    ('NAME', 'pow'),
-
-    # Math lib functions
-    ('METHOD', 'factorial'),
-    ('METHOD', 'sqrt'),
-    ('METHOD', 'floor'),
-    ('METHOD', 'ceil'),
-    ('METHOD', 'cos'),
-    ('METHOD', 'sin'),
-    ('METHOD', 'tan'),
-    ('METHOD', 'pi'),
-    ('METHOD', 'e'),
-
-    # List methods
-    ('METHOD', 'push_back'),
-    ('METHOD', 'pop_back'),
-
-    # String methods
-    ('METHOD', 'lower'),
-    ('METHOD', 'upper'),
-    ('METHOD', 'startswith'),
-    ('METHOD', 'endswith')
-]
-
 types = ["str", "int", "float", "list", "bool", "strlist", "None"]
 
 typecomparisons = ["const std::type_info& inttype = typeid(int);", "const std::type_info& floattype = typeid(float);"]
@@ -405,12 +375,8 @@ class Compile:
                 oktokens.append(token)
                 continue
 
-            if token in pythonbuiltins:
-                oktokens.append(token)
-                continue
-
             if token not in implemented:
-                if token[self.type] not in ["STRING", "FSTRING", "FLOAT", "NAME", "FUNC", "VAR", "SIG", "PARAM", "TYPE", "INT", "OP", "VARREF", "FUNCREF", "IMPORTREF", "IMPORT_MODULE"]:
+                if token[self.type] not in ["STRING", "FSTRING", "FLOAT", "NAME", "FUNC", "VAR", "SIG", "PARAM", "TYPE", "INT", "OP", "VARREF", "FUNCREF", "IMPORTREF", "IMPORT_MODULE", "METHOD"]:
                     continue
 
                 if token[self.type] == "OP":
