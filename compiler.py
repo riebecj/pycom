@@ -190,7 +190,7 @@ class Compile:
 
                 if self.oktokens[i-gobackby][self.type] != "SIG" and not str(self.oktokens[i-gobackby][self.value]).endswith(" TAB"):
                     if self.oktokens[i+1][0] != "FUNC" and self.oktokens[i] != ("KW", "continue") and self.oktokens[i] != ("KW", "return") and self.oktokens[i] != ("KW", "import") and self.oktokens[i] != ("KW", "True") and self.oktokens[i] != ("KW", "False") and self.oktokens[i] != ("KW", "for"):
-                        print(self.oktokens[i+1])
+                        pass
 
             if self.oktokens[i][self.type] == "VAR":
                 if self.oktokens[i+1] == ('SIG', 'TYPEPOINTER'):

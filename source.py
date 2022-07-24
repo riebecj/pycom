@@ -1,3 +1,1 @@
-import math
-
-print(math.factorial(100000))
+print("Hello") if 3 == 3 else None

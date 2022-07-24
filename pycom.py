@@ -7,6 +7,7 @@ import os
 import subprocess
 from colorama import Fore
 import time
+import errors
 
 def red(string): return Fore.RED + string + Fore.RESET
 
@@ -114,7 +115,8 @@ end_time = time.perf_counter()
 print(f"[INFO] Finished compiling '{filename}';\n") if INFO else None
 
 if error != b"":
-    print(red(f"error: compilation error: {error.decode('utf-8')}"))
+    errorstr = errors.cpperrortopycomerror(error.decode('utf-8'))
+    print(red(f"error: compilation error: {errorstr}"))
     print(compiledcode) if FAILPRINT else None
     exit(1)
 

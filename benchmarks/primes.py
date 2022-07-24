@@ -17,6 +17,8 @@ def main():
 
     print(total)
 
+main()
+
 # CPython (default interpreter): 17.127s
 
 # Pycom: 4.441s (3.85x faster)
