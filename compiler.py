@@ -72,13 +72,13 @@ types = ["str", "int", "float", "list", "bool", "None"]
 
 typecomparisons = ["const std::type_info& inttype = typeid(int);", "const std::type_info& floattype = typeid(float);"]
 
-includes = ["iostream", "string", "headers/range.hpp",
+includes = ["iostream", "string", "headers/range.hpp", "cmath",
             "sstream", "headers/fmt/format.h", "vector", "boost/multiprecision/cpp_int.hpp", "typeinfo", "headers/stdpy.hpp"]
 
 using = ["util::lang::range"]
 
 pytypetoctype = {
-    "str": "std::string",
+    "str": "pystring",
     "int": "bigint",
     "float": "long double",
     "None": "void",
@@ -89,7 +89,7 @@ pytypetoctype = {
 
 typedefs = [
     ("boost::multiprecision::cpp_int", "bigint"),
-    ("std::vector<std::string>", "strlist"),
+    ("std::vector<pystring>", "strlist"),
     ("std::vector<bigint>", "intlist"),
     ("std::vector<float>", "floatlist"),
 
@@ -350,13 +350,7 @@ class Compile:
                 code += self.oktokens[i][self.value]
 
             elif self.oktokens[i][self.type] == "METHOD":
-                if self.oktokens[i] in funcmethods:
-                    methodname = self.oktokens[i][self.value]
-                    paramname = self.oktokens[i-2][self.value]
-                    code += f"{methodname}({paramname})"
-
-                else:
-                    code += self.oktokens[i][self.value]
+                code += self.oktokens[i][self.value]
 
             if i + 1 != len(self.oktokens):
                 if self.oktokens[i+1] == ("SIG", "BLOCK_END") and self.oktokens[i] != ("SIG", "NEWLINE") and self.oktokens[i] != ("SIG", "BLOCK_END"):

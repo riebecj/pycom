@@ -1,4 +1,3 @@
-x: list = [i + 1 for i in range(1, 1000)]
+s: str = "Hello"
 
-for n in x:
-    print(n)
+print(s.lower())
