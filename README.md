@@ -27,6 +27,10 @@ Simply:
 > cd pycom\
 > pip install -r requirements.txt
 
+### C++ dependencies:
+> A recent version of the g++ compiler
+> The Boost C++ library; download here: https://www.boost.org/users/history/version_1_79_0.html (put the folder into usr/gcc/include/)
+
 ### Run tests
 
 > python3 runtests.py
@@ -51,7 +55,6 @@ High iteration loops:
 for i in range(1, 1000001):
     if i % 3 == 0:
         print(i)
-
 ```
 
 ```
@@ -70,7 +73,6 @@ def main():
         total += is_prime(i)
 
     print(total)
-
 ```
 
 ## Speed benchmarks and comparisons
@@ -90,8 +92,12 @@ def main():
 - Some in built functions
 - Some math library functions
 - List comprehensions
+- Python-style arbitarily large intergers
 
 ## Not supported yet
 
 - Pythonic ways of writing certain blocks (one line if...else, etc.)
+- Multi-line string literals
 - A lot of libraries included in stdlib
+- Classes
+

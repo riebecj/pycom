@@ -33,7 +33,8 @@ implemented = [
 
 implementedtypes = [
     "STRING",
-    "FSTRING"
+    "FSTRING",
+    "FLOAT"
 ]
 
 implementedmodules = [
@@ -47,11 +48,18 @@ pythonbuiltins = [
     ('NAME', 'range'),
     ('NAME', 'int'),
     ('NAME', 'exit'),
+    ('NAME', 'pow'),
 
     # Math lib functions
     ('METHOD', 'factorial'),
     ('METHOD', 'sqrt'),
     ('METHOD', 'floor'),
+    ('METHOD', 'ceil'),
+    ('METHOD', 'cos'),
+    ('METHOD', 'sin'),
+    ('METHOD', 'tan'),
+    ('METHOD', 'pi'),
+    ('METHOD', 'e'),
 
     # List methods
     ('METHOD', 'push_back'),
@@ -249,8 +257,9 @@ class Compile:
                     if mapped != ";":
                         code += " " + mapped + " "
 
-            elif self.oktokens[i][self.type] == "STRING" or self.oktokens[i][self.type] == "INT":
+            elif self.oktokens[i][self.type] == "STRING" or self.oktokens[i][self.type] == "INT" or self.oktokens[i][self.type] == "FLOAT":
                 code += self.oktokens[i][self.value]
+
             elif self.oktokens[i][self.type] == "SIG":
                 if self.oktokens[i][self.value] == "NEWLINE":
                     if i + 1 != len(self.oktokens):
@@ -401,7 +410,7 @@ class Compile:
                 continue
 
             if token not in implemented:
-                if token[self.type] not in ["STRING", "FSTRING", "NAME", "FUNC", "VAR", "SIG", "PARAM", "TYPE", "INT", "OP", "VARREF", "FUNCREF", "IMPORTREF", "IMPORT_MODULE"]:
+                if token[self.type] not in ["STRING", "FSTRING", "FLOAT", "NAME", "FUNC", "VAR", "SIG", "PARAM", "TYPE", "INT", "OP", "VARREF", "FUNCREF", "IMPORTREF", "IMPORT_MODULE"]:
                     continue
 
                 if token[self.type] == "OP":

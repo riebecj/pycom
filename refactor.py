@@ -20,7 +20,7 @@ def listcomptocppfor(line: str, mode = "translate"):
 
         forbody = listcomp.split("for", 1)[0].strip()
 
-        return f"{varname}: list = []\nfor {forinit}:\n    {varname}.append({forbody});" if mode == "translate" else foritername
+        return f"{varname} = []\nfor {forinit}:\n    {varname}.append({forbody});" if mode == "translate" else foritername
 
     except Exception:
         return None

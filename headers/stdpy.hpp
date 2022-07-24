@@ -49,32 +49,6 @@ std::string input(std::string prompt){
     std::cout << prompt; std::string x; std::cin >> x; return x;
 }
 
-std::string lower(std::string str){
-    std::string result = ""; 
-    for (auto &ch: str){
-        int asciiofch = int(ch);
-        if (asciiofch >= 65 && asciiofch <= 91){
-            result = result + char(asciiofch + 32);
-        } else {
-            result = result + ch;
-        }
-    }
-    return result;
-}
-
-std::string upper(std::string str){
-    std::string result = ""; 
-    for (auto &ch: str){
-        int asciiofch = int(ch);
-        if (asciiofch >= 97 && asciiofch <= 124){
-            result = result + char(asciiofch - 32);
-        } else {
-            result = result + ch;
-        }
-    }
-    return result;
-}
-
 // This class is not mine, it was posted here https://www.daniweb.com/programming/software-development/code/252294/string-class-inherited-from-basic-string
 class pystring : public std::basic_string<char>
 {
