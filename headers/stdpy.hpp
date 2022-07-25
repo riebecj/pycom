@@ -25,6 +25,14 @@ void print(long double ldstr){
     std::cout << ldstr << char(10);
 }
 
+void print(long lstr){
+    std::cout << lstr << char(10);
+}
+
+void print(double dstr){
+    std::cout << dstr << char(10);
+}
+
 void print(bigint bigintstr){
     std::cout << bigintstr << char(10);
 }

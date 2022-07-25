@@ -7,6 +7,7 @@ import time
 
 tokmap = {
     "\n": "NEWLINE",
+    "\r\n": "NEWLINE",
     "\t": "TAB",
 
     "+": "PLUS",
@@ -66,7 +67,7 @@ blockkw = ["if", "elif", "else", "for", "while", "try",
 operators = ["+", "-", "*", "/", "//", "%", "**", "+=", "-=", "*=", "/=", "%=", "**=", "//=", "&=", "|=", ">>=", "<<=", "=",
              "==", "!=", ">", "<", ">=", "<=", "&", "|", "^", ">>", "<<", "(", ")", "[", "]", "{", "}", "and", "or", "in", "is", "not"]
 
-signifiers = [":", ";", ".", ",", "\n", "\t", "->"]
+signifiers = [":", ";", ".", ",", "\n", "\r\n", "\t", "->"]
 
 types = ["str", "int", "float", "list", "dict", "set", "bool", "strlist"]
 

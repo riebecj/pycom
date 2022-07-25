@@ -27,7 +27,7 @@ class Math{
         }
 
         long double sqrt(long double root){
-            return sqrtf128(root);
+            return sqrtf(root);
         }
 
         long double exp(long double x){
@@ -38,23 +38,23 @@ class Math{
         }
 
         long double cos(long double x){
-            return cosf128(x);
+            return cosf(x);
         }
         
         long double sin(long double x){
-            return sinf128(x);
+            return sinf(x);
         }
 
         long double tan(long double x){
-            return tanf128(x);
+            return tanf(x);
         }
 
 
         int floor(long double x){
-            return floorf128(x);
+            return floorf(x);
         }
 
         int ceil(long double x){
-            return ceilf128(x);
+            return ceilf(x);
         }
 };

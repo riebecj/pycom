@@ -1,8 +1,20 @@
 # Pycom: A Python Compiler
 
+## Installation
+
+Simply:
+> git clone https://github.com/Omyyyy/pycom.git\
+> cd pycom\
+> pip install -r requirements.txt\s
+> pip install -e .
+
+Note: Do not touch the 'pycom.py.egg-info' folder that the last command will create. It will not work otherwise.
+
 ## Usage
 
-> ./pycom.py (flags) [source file]
+If you followed the installation instructions correctly, this will work in every directory:
+
+> pycom (flags) [source file]
 
 ### Flags
 * -i (bool):\
@@ -19,13 +31,6 @@
 
 * -fm | --fastmath (bool):\
     Perform aggressive optimisations speed on calculations at the cost of some precision. Defaults to off.
-
-## Installation
-
-Simply:
-> git clone https://github.com/Omyyyy/pycom.git\
-> cd pycom\
-> pip install -r requirements.txt
 
 ### Python dependencies:
 > Python version 3.10+

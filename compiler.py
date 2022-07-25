@@ -1,6 +1,9 @@
 import tokenise
 import time
 from colorama import Fore
+import platform
+
+PLATFORM = platform.system()
 
 def red(string): return Fore.RED + string + Fore.RESET
 
@@ -131,7 +134,7 @@ class Compile:
         self.oktokens = self.checktokens()
 
     def iteratetokens(self):
-        code = "#define FMT_HEADER_ONLY\n"
+        code = """#define FMT_HEADER_ONLY\n"""
         for include in includes:
             code += f'#include "{include}"\n'
         for use in using:
