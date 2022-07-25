@@ -8,6 +8,9 @@ import subprocess
 from colorama import Fore
 import time
 import errors
+import platform
+
+delcmd = "rm" if "Linux" in platform.platform() else "del"
 
 def red(string): return Fore.RED + string + Fore.RESET
 
@@ -134,12 +137,12 @@ if output == b"":
     print(f"[INFO] Successfully compiled '{filename}' in {round(end_time-start_time, 2)}s ({round(end_time-start_time, 2) * 1000}ms)\n") if INFO and not CHECK else None
     if CHECK:
         print(f"[INFO] No errors in the compilation of '{filename}'; successful check")
-        os.system(f"rm {filename.split('.')[0]}")
+        os.system(f"{delcmd} {filename.split('.')[0]}")
         exit(1)
     
     if RUNANDDEL:
         os.system(f"./{filename.split('.')[0]}")
-        os.system(f"rm {filename.split('.')[0]}")
+        os.system(f"{delcmd} {filename.split('.')[0]}")
 
     elif RUN:
         os.system(f"./{filename.split('.')[0]}")
