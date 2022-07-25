@@ -150,7 +150,7 @@ def main():
         exit(1)
 
     if output == b"":
-        filename = filename.split('.')[0].replace("/", "\\\\")
+        filename = filename.split('.')[0].replace("/", "\\\\") if PLATFORM != "Linux" else filename.split('.')[0]
         print(f"[INFO] Successfully compiled '{filename}' in {round(end_time-start_time, 2)}s ({round(end_time-start_time, 2) * 1000}ms)\n") if INFO and not CHECK else None
         if CHECK:
             print(f"[INFO] No errors in the compilation of '{filename}'; successful check")
@@ -158,11 +158,11 @@ def main():
             exit(1)
         
         if RUNANDDEL:
-            os.startfile(f"./{filename.split('.')[0]}") if PLATFORM == "Linux" else os.system(f".\{filename}.exe")
+            os.system(f"./{filename.split('.')[0]}") if PLATFORM == "Linux" else os.system(f".\{filename}.exe")
             os.remove(filename.split('.')[0]) if PLATFORM == "Linux" else os.remove(filename + ".exe")
 
         elif RUN:
-            os.startfile(f"./{filename.split('.')[0]}") if PLATFORM == "Linux" else os.system(f".\{filename}.exe")
+            os.system(f"./{filename.split('.')[0]}") if PLATFORM == "Linux" else os.system(f".\{filename}.exe")
 
 if __name__ == "__main__":
     main()
