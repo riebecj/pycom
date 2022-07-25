@@ -119,7 +119,11 @@ print(f"[INFO] Finished compiling '{filename}';\n") if INFO else None
 
 if error != b"":
     errorstr = errors.cpperrortopycomerror(error.decode('utf-8'), flags) if not GPPERRORS else error.decode('utf-8')
-    print(red(f"pycom: CompilationError:\n{errorstr}")) if not CHECK and not GPPERRORS else print(red(errorstr))
+    if not GPPERRORS and not CHECK:
+        print(red(f"pycom: CompilationError:\n{errorstr}"))
+
+    elif GPPERRORS:
+        print(red(errorstr))
 
     print(red(f"[INFO] Errors in the compilation of '{filename}'; unsuccessful check")) if CHECK else None
 
