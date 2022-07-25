@@ -121,7 +121,7 @@ def main():
 - If you declare an integer variable like 'n = 3', this will be interpreted as a C++ 64 bit integer instead of\
 Python's arbitary size integers; to declare an integer of infinite size, use 'n: int = 3'
 - Don't use semicolons in your Python source; Pycom will throw an error.
-- Cannot support an 'if \__name__ == "\__main__": ' type thing; the main() function is alreaduy entry point
+- Cannot support an 'if \__name__ == "\__main__": ' type thing; the main() function is already entry point
 - If you have no functions in your code, you can do everything as you normally would:
 ```
 print("Hello, World") # This will compile
