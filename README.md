@@ -50,11 +50,13 @@ If you followed the installation instructions correctly, this will work in every
 
 ## What is Pycom?
 
-Pycom is effectively a compiler for Python code, bringing it down to a native executable (20-30x the speed of Python interpetation) with C++ as 'intermediate representation'. It supports almost all Pythonic syntax along with a lot of the standard library and inbuilt functions. To see what is currently supported and not supported, check the 'Examples' section below.
+Pycom is effectively a compiler for Python code, bringing it down to a native executable (20-30x the speed of Python interpretation) with C++ as 'intermediate representation'. It supports almost all Pythonic syntax along with a lot of the standard library and inbuilt functions. To see what is currently supported and not supported, check the 'Examples' section below.
+Why and when use Pycom?
 
 ## Why and when use Pycom?
 
 Python is slow. While many optimisations and new implementations of it have vastly improved its speed, generating native code that can run as a standalone executable from Python code has never really been done. As a result, no matter what, Python code has never hit levels of speed and portability that C/C++. Pycom aims to tackle this.
+Due to Pycom (currently) not supporting all Python features from all versions, you should only really use it if you want to run simple applications with nothing too crazy or pythonic going on (again, check 'Examples')
 
 Due to Pycom (currenly) not supporting all Python features from all versions, you should only really use it if you want to run simple applications with nothing too crazy or pythonic going on (again, check 'Examples')
 
