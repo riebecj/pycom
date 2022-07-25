@@ -45,7 +45,7 @@ implementedmodules = [
     "numpy"
 ]
 
-types = ["str", "int", "float", "list", "bool", "strlist", "None"]
+types = ["str", "int", "float", "list", "bool", "strlist", "floatlist", "None"]
 
 typecomparisons = ["const std::type_info& inttype = typeid(int);", "const std::type_info& floattype = typeid(float);"]
 
@@ -57,10 +57,11 @@ using = ["util::lang::range"]
 pytypetoctype = {
     "str": "pystring",
     "strlist": "strlist",
+    "floatlist": "floatlist",
+    "list": "intlist",
     "int": "bigint",
     "float": "long double",
     "None": "void",
-    "list": "intlist",
     "bool": "bool"
 }
 
@@ -176,7 +177,7 @@ class Compile:
                         typeofvar = self.oktokens[i+2][1]
                     else:
                         print(
-                            red(f"error: token #{i}: invalid type specified for var '{self.oktokens[i][self.value]}'"))
+                            red(f"error: invalid type specified for var '{self.oktokens[i][self.value]}'"))
                         exit(1)
                     ctypeofvar = pytypetoctype[typeofvar]
                     varname = self.oktokens[i][self.value]
@@ -304,7 +305,7 @@ class Compile:
 
                 else:
                     print(
-                        red(f"error: token #{i}: keyword '{self.oktokens[i][self.value]}' is not yet implemented, sorry"))
+                        red(f"error: keyword '{self.oktokens[i][self.value]}' is not yet implemented, sorry"))
                     exit(1)
 
             elif self.oktokens[i][self.type] == "FUNC" or self.oktokens[i][self.type] == "NAME":
@@ -316,7 +317,7 @@ class Compile:
                         typeofparam = self.oktokens[i+2][1]
                     else:
                         print(
-                            red(f"error: token #{i}: invalid type specified for param '{self.oktokens[i][self.value]}'"))
+                            red(f"error: invalid type specified for param '{self.oktokens[i][self.value]}'"))
                         exit(1)
                     ctypeofparam = pytypetoctype[typeofparam]
                     paramname = self.oktokens[i][self.value]

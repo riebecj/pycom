@@ -134,3 +134,4 @@ test
 source
 temptests/
 temp.py
+*.json

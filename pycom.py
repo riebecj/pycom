@@ -14,8 +14,6 @@ import shlex
 def main():
     PLATFORM = platform.system()
 
-    delcmd = "rm" if PLATFORM == "Linux" else "del"
-
     def red(string): return Fore.RED + string + Fore.RESET
 
     filename = sys.argv[-1]
@@ -42,6 +40,7 @@ def main():
     GPPERRORS = False
 
     if "-d" in flags or "--debug" in flags:
+        # This flag is for me and it will not work for you as the files neccessary are not included in the Github repo.
         DEBUG = True
     if "-i" in flags or "--info" in flags:
         INFO = True
@@ -153,7 +152,7 @@ def main():
         filename = filename.split('.')[0].replace("/", "\\\\") if PLATFORM != "Linux" else filename.split('.')[0]
         print(f"[INFO] Successfully compiled '{filename}' in {round(end_time-start_time, 2)}s ({round(end_time-start_time, 2) * 1000}ms)\n") if INFO and not CHECK else None
         if CHECK:
-            print(f"[INFO] No errors in the compilation of '{filename}'; successful check")
+            print(f"[INFO] No errors in the compilation of '{filename}.py'; successful check")
             os.remove(filename.split('.')[0]) if PLATFORM == "Linux" else os.remove(filename + ".exe")
             exit(1)
         

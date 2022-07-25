@@ -1,11 +1,14 @@
 # Pycom: A Python Compiler
 
+#### It's called README.md for a reason. Read it thoroughly before creating a new issue.
+
+
 ## Installation
 
 Simply:
 > git clone https://github.com/Omyyyy/pycom.git\
 > cd pycom\
-> pip install -r requirements.txt\s
+> pip install -r requirements.txt\
 > pip install -e .
 
 Note: Do not touch the 'pycom.py.egg-info' folder that the last command will create. It will not work otherwise.
@@ -46,13 +49,13 @@ If you followed the installation instructions correctly, this will work in every
 
 ## What is Pycom?
 
-Pycom is effectively a compiler for Python code, bringing it down to a native executable with C++ as 'intermediate representation'. It supports all of the BASIC-like syntax of Python along with a lot of the standard library and inbuilt functions. To see what is currently supported and not supported, check the 'Examples' section below.
+Pycom is effectively a compiler for Python code, bringing it down to a native executable (20-30x the speed of Python interpetation) with C++ as 'intermediate representation'. It supports almost all Pythonic syntax along with a lot of the standard library and inbuilt functions. To see what is currently supported and not supported, check the 'Examples' section below.
 
 ## Why and when use Pycom?
 
 Python is slow. While many optimisations and new implementations of it have vastly improved its speed, generating native code that can run as a standalone executable from Python code has never really been done. As a result, no matter what, Python code has never hit levels of speed and portability that C/C++. Pycom aims to tackle this.
 
-Due to Pycom (currenly) not supporting all Python features from all versions, you should only really use it if you want to run simple applications that require high speed (again, check 'Examples')
+Due to Pycom (currenly) not supporting all Python features from all versions, you should only really use it if you want to run simple applications with nothing too crazy or pythonic going on (again, check 'Examples')
 
 ## Examples
 
@@ -110,6 +113,7 @@ def main():
 - A lot of libraries included in stdlib
 - Classes
 - Try, except and finally blocks
+- Heterozygous lists; lists with more than one data type in them
 
 ## Small quirks and differences to CPython:
 
@@ -143,7 +147,11 @@ printhello()
 ```
 
 It's inconventient and the latter may be supported sometime, but this is just how it is for now. Also if you do have a\
-'main()' function, it cannot return a value as it an entry point. The compiler will throw and error.
+'main()' function, it cannot return a value as it an entry point. The compiler will throw an error.
 
 I will work on trying to remove these exceptions and quirks and try to make Pycom and CPython completely identical,\
 but right now, it is quite experimental and has quite a bit of room for improvement.
+
+## Contributing
+
+Read 'CONTRIBUTING.txt'

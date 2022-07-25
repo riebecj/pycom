@@ -1,3 +1,13 @@
+"""
+THE FOLLOWING BUILTINS ARE NOT SUPPORTED YET:
+
+- .remove() (lists)
+
+"""
+
+
+
+
 import tokenize
 import sys
 import refactor
@@ -69,7 +79,7 @@ operators = ["+", "-", "*", "/", "//", "%", "**", "+=", "-=", "*=", "/=", "%=", 
 
 signifiers = [":", ";", ".", ",", "\n", "\r\n", "\t", "->"]
 
-types = ["str", "int", "float", "list", "dict", "set", "bool", "strlist"]
+types = ["str", "int", "float", "list", "dict", "set", "bool", "strlist", "floatlist"]
 
 pylistmethodtocpp = {
     "append": "push_back",
