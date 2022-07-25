@@ -21,20 +21,23 @@ If you followed the installation instructions correctly, this will work in every
 > pycom (flags) [source file]
 
 ### Flags
-* -i (bool):\
+* -i | --info (bool):\
     Print additional information about compilation (such as time taken). Defaults to off.
 
-* -r (bool):\
+* -r | --run (bool):\
     Run the generated executable automatically after compilation. Defaults to off.
 
-* -rd (bool):\
+* -rd | --runandelete (bool):\
     Run the generated executable automatically after compilation, and then delete it. Defaults to off.
 
-* -o [output] (string):\
+* -o | --output [output] (string):\
     The string specified after the flag will be the name of the generated executable. Defaults to the name of the Python file that was passed in.
 
 * -fm | --fastmath (bool):\
     Perform aggressive optimisations speed on calculations at the cost of some precision. Defaults to off.
+
+* -c | --check (bool):\
+    Check if the program will compile without actually compiling it. Defaults to off.
 
 ### Python dependencies:
 > Python version 3.10+
