@@ -28,6 +28,7 @@ FASTMATH = False
 VERBOSE = False
 TEST = False
 CHECK = False
+GPPERRORS = False
 
 if "-d" in flags or "--debug" in flags:
     DEBUG = True
@@ -54,6 +55,8 @@ if "-fm" in flags or "--fastmath" in flags:
     FASTMATH = True
 if "-c" in flags or "--check" in flags:
     CHECK = True
+if "-ge" in flags or "--gpperrors" in flags:
+    GPPERRORS = True
 
 if RAWTOKENS:
     print(tokenise.gettokens(filename, flags))
@@ -115,10 +118,10 @@ end_time = time.perf_counter()
 print(f"[INFO] Finished compiling '{filename}';\n") if INFO else None
 
 if error != b"":
-    errorstr = errors.cpperrortopycomerror(error.decode('utf-8'))
-    print(red(f"pycom: CompilationError:\n{errorstr}")) if not CHECK else None
+    errorstr = errors.cpperrortopycomerror(error.decode('utf-8'), flags) if not GPPERRORS else error.decode('utf-8')
+    print(red(f"pycom: CompilationError:\n{errorstr}")) if not CHECK and not GPPERRORS else print(red(errorstr))
+
     print(red(f"[INFO] Errors in the compilation of '{filename}'; unsuccessful check")) if CHECK else None
-    
 
     print(compiledcode) if FAILPRINT else None
     exit(1)
