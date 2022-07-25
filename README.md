@@ -2,11 +2,12 @@
 
 #### It's called README.md for a reason. Read it thoroughly before creating a new issue.
 
+#### Supported platforms: Windows, Linux
 
 ## Installation
 
 Simply:
-> git clone https://github.com/Omyyyy/pycom.git\
+> git clone https://github.com/Omyyyy/pycom.git \
 > cd pycom\
 > pip install -r requirements.txt\
 > pip install -e .
@@ -154,4 +155,4 @@ but right now, it is quite experimental and has quite a bit of room for improvem
 
 ## Contributing
 
-Read 'CONTRIBUTING.txt'
+Read 'CONTRIBUTING.txt'.
