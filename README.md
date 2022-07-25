@@ -104,4 +104,40 @@ def main():
 - Multi-line string literals
 - A lot of libraries included in stdlib
 - Classes
+- Try, except and finally blocks
 
+## Small quirks and differences to CPython:
+
+- If you declare an integer variable like 'n = 3', this will be interpreted as a C++ 64 bit integer instead of\
+Python's arbitary size integers; to declare an integer of infinite size, use 'n: int = 3'
+- Don't use semicolons in your Python source; Pycom will throw an error.
+- If you have no functions in your code, you can do everything as you normally would:
+```
+print("Hello, World") # This will compile
+```
+- But if you have at least one user defined function, the starting point needs to be in a main() function block,\
+as such:
+```
+def printhello():
+    print("Hello!")
+
+def main():
+    printhello() 
+
+# Will compile 
+```
+
+```
+def printhello():
+    print("Hello!")
+
+printhello() 
+
+# Will not compile
+```
+
+It's inconventient and the latter may be supported sometime, but this is just how it is for now. Also if you do have a\
+'main()' function, it cannot return a value as it an entry point. The compiler will throw and error.
+
+I will work on trying to remove these exceptions and quirks and try to make Pycom and CPython completely identical,\
+but right now, it is quite experimental and has quite a bit of room for improvement.
