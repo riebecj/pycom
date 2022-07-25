@@ -195,6 +195,9 @@ def gettokens(filename: str, flags: list):
                 token_list[i] = (typeofcurrent, tokmap[current])
 
             except KeyError:
+                if typeofcurrent == "STRING":
+                    current = current.replace("\\n", "\\\\n")
+
                 token_list[i] = (typeofcurrent, current)
                 if token_list[i][0] == "SIG" and token_list[i][1].startswith("    ") and allcharacterssame(token_list[i][1]):
                     token_list[i] = ("SIG", f"{int(len(current) / 4)} TAB")
@@ -216,7 +219,7 @@ def gettokens(filename: str, flags: list):
 
                 elif token_list[i][0] == "FSTRING":
                     token_list[i] = (
-                        "STRING", fstringtocppformat(token_list[i][1]))
+                        "STRING", fstringtocppformat(token_list[i][1]).replace("\n", "\\n"))
 
                 elif token_list[i][0] == "NAME":
                     if token_list[i][1] in types:
