@@ -81,6 +81,9 @@ def refactorforcompiler(code: list):
                     if '"' not in str(lineandindlevel[i][0]).strip() and "." in str(lineandindlevel[i][0]).strip():
                         lineandindlevel[i] = (str(lineandindlevel[i][0]).strip().split("=", 1)[0] + ":floatlist = " + str(lineandindlevel[i][0]).strip().split("=", 1)[1], lineandindlevel[i][1])
 
+                    else:
+                        lineandindlevel[i] = (str(lineandindlevel[i][0]).strip().split("=", 1)[0] + ":list = " + str(lineandindlevel[i][0]).strip().split("=", 1)[1], lineandindlevel[i][1])
+
         if not definanylines:
             lineandindlevel[-1] = (lineandindlevel[-1][0] + ";", lineandindlevel[-1][1])
 

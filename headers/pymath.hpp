@@ -49,6 +49,37 @@ class Math{
             return tanf(x);
         }
 
+        long double acos(long double x){
+            return acosf(x);
+        }
+        
+        long double asin(long double x){
+            return asinf(x);
+        }
+
+        long double atan(long double x){
+            return atanf(x);
+        }
+
+        long double hcos(long double x){
+            return acosf(x);
+        }
+        
+        long double hsin(long double x){
+            return asinf(x);
+        }
+
+        long double htan(long double x){
+            return atanf(x);
+        }
+
+        long double radians(long double deg){
+            return deg * (pi / 180);
+        }
+
+        long double degrees(long double rad){
+            return rad * (180 / pi);
+        }
 
         int floor(long double x){
             return floorf(x);
