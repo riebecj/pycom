@@ -262,7 +262,13 @@ def gettokens(filename: str, flags: list):
                             token_list[i] = ("METHOD", pylistmethodtocpp[token_list[i][1]])
 
                     elif token_list[i-1] == ("KW", "import"):
-                        token_list[i] = ("IMPORT_MODULE", token_list[i][1])
+                        if token_list[i][1] != "random":
+                            token_list[i] = ("IMPORT_MODULE", token_list[i][1])
+                            importnames.append(token_list[i][1])
+
+                        else:
+                            token_list[i] = ("IMPORT_MODULE", "rnd") # 'random' module clashes with C method, so must call it rnd here
+                            importnames.append("random")
 
                     elif token_list[i-1] == ("KW", "def"):
                         token_list[i] = ("FUNC", token_list[i][1])
@@ -331,6 +337,16 @@ def gettokens(filename: str, flags: list):
                         if token_list[i+1] == ("SIG", "TYPEPOINTER") and token_list[i+2] in types and token_list[i+3] != ("OP", "ASSIGN") and token_list[i][1] not in types:
                             token_list[i] = ("PARAM", token_list[i][1])
                             varnames.append(token_list[i][1])
+
+                if token_list[i][1] in funcnames and token_list[i-1] != ("KW", "def"):
+                    token_list[i] = (
+                                "FUNCREF", token_list[i][1])
+                elif token_list[i][1] in importnames and token_list[i-1] != ("KW", "import"):
+                    token_list[i] = (
+                                "IMPORTREF", token_list[i][1])
+                elif token_list[i][1] in classnames and token_list[i-1] != ("KW", "class"):
+                    token_list[i] = (
+                                "CLASSREF", token_list[i][1])
 
                     
 

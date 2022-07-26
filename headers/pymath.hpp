@@ -62,7 +62,7 @@ class Math{
         }
 
         long double hcos(long double x){
-            return acosf(x);
+            return hcos(x);
         }
         
         long double hsin(long double x){

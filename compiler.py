@@ -42,7 +42,10 @@ implementedtypes = [
 
 implementedmodules = [
     "math",
-    "numpy"
+    "numpy",
+    "os",
+    "sys",
+    "rnd"
 ]
 
 types = ["str", "int", "float", "list", "bool", "strlist", "floatlist", "None"]
@@ -156,7 +159,6 @@ class Compile:
         start_time = time.perf_counter()
 
         for i in range(len(self.oktokens)):
-
             if self.oktokens[i][self.type] == "TYPE":
                 if self.oktokens[i+1] == ("OP", "LPAREN"):
                     self.oktokens[i] = ("NAME", self.oktokens[i][self.value])
@@ -327,7 +329,7 @@ class Compile:
                     code += f"auto {self.oktokens[i][self.value]}"
 
             elif self.oktokens[i][self.type] == "IMPORTREF":
-                code += self.oktokens[i][self.value]
+                code += self.oktokens[i][self.value] if self.oktokens[i][self.value] != "random" else "rnd"
 
             elif self.oktokens[i][self.type] == "METHOD":
                 code += self.oktokens[i][self.value]
