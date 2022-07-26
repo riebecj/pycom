@@ -119,7 +119,7 @@ def main():
 - A lot of libraries included in stdlib
 - Classes
 - Try, except and finally blocks
-- Heterozygous lists; lists with more than one data type in them
+- Heterogeneous lists; lists with more than one data type in them
 
 ## Small quirks and differences to CPython:
 
