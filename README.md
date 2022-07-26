@@ -21,20 +21,23 @@ If you followed the installation instructions correctly, this will work in every
 > pycom (flags) [source file]
 
 ### Flags
-* -i (bool):\
+* -i | --info (bool):\
     Print additional information about compilation (such as time taken). Defaults to off.
 
-* -r (bool):\
+* -r | --run (bool):\
     Run the generated executable automatically after compilation. Defaults to off.
 
-* -rd (bool):\
+* -rd | --runandelete (bool):\
     Run the generated executable automatically after compilation, and then delete it. Defaults to off.
 
-* -o [output] (string):\
+* -o | --output [output] (string):\
     The string specified after the flag will be the name of the generated executable. Defaults to the name of the Python file that was passed in.
 
 * -fm | --fastmath (bool):\
     Perform aggressive optimisations speed on calculations at the cost of some precision. Defaults to off.
+
+* -c | --check (bool):\
+    Check if the program will compile without actually compiling it. Defaults to off.
 
 ### Python dependencies:
 > Python version 3.10+
@@ -50,11 +53,13 @@ If you followed the installation instructions correctly, this will work in every
 
 ## What is Pycom?
 
-Pycom is effectively a compiler for Python code, bringing it down to a native executable (20-30x the speed of Python interpetation) with C++ as 'intermediate representation'. It supports almost all Pythonic syntax along with a lot of the standard library and inbuilt functions. To see what is currently supported and not supported, check the 'Examples' section below.
+Pycom is effectively a compiler for Python code, bringing it down to a native executable (20-30x the speed of Python interpretation) with C++ as 'intermediate representation'. It supports almost all Pythonic syntax along with a lot of the standard library and inbuilt functions. To see what is currently supported and not supported, check the 'Examples' section below.
+Why and when use Pycom?
 
 ## Why and when use Pycom?
 
 Python is slow. While many optimisations and new implementations of it have vastly improved its speed, generating native code that can run as a standalone executable from Python code has never really been done. As a result, no matter what, Python code has never hit levels of speed and portability that C/C++. Pycom aims to tackle this.
+Due to Pycom (currently) not supporting all Python features from all versions, you should only really use it if you want to run simple applications with nothing too crazy or pythonic going on (again, check 'Examples')
 
 Due to Pycom (currenly) not supporting all Python features from all versions, you should only really use it if you want to run simple applications with nothing too crazy or pythonic going on (again, check 'Examples')
 
@@ -121,7 +126,7 @@ def main():
 - If you declare an integer variable like 'n = 3', this will be interpreted as a C++ 64 bit integer instead of\
 Python's arbitary size integers; to declare an integer of infinite size, use 'n: int = 3'
 - Don't use semicolons in your Python source; Pycom will throw an error.
-- Cannot support an 'if \__name__ == "\__main__": ' type thing; the main() function is alreaduy entry point
+- Cannot support an 'if \__name__ == "\__main__": ' type thing; the main() function is already entry point
 - If you have no functions in your code, you can do everything as you normally would:
 ```
 print("Hello, World") # This will compile

@@ -21,6 +21,7 @@ implemented = [
     ('KW', 'return'),
     ('KW', 'continue'),
     ('KW', 'break'),
+    ('KW', 'pass'),
     ('KW', 'import'),
     ('KW', "True"),
     ("KW", "False"),
@@ -290,8 +291,11 @@ class Compile:
                 elif self.oktokens[i][self.value] == "continue":
                     code += "continue"
 
-                elif self.oktokens[i][self.value] == "continue":
+                elif self.oktokens[i][self.value] == "break":
                     code += "break"
+                    
+                elif self.oktokens[i][self.value] == "pass":
+                    code += "pass"
 
                 elif self.oktokens[i][self.value] == "return":
                     code += "return "
