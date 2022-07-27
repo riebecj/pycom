@@ -58,9 +58,8 @@ Pycom is effectively a compiler for Python code, bringing it down to a native ex
 ## Why and when use Pycom?
 
 Python is slow. While many optimisations and new implementations of it have vastly improved its speed, generating native code that can run as a standalone executable from Python code has never really been done. As a result, no matter what, Python code has never hit levels of speed and portability that C/C++. Pycom aims to tackle this.
-Due to Pycom (currently) not supporting all Python features from all versions, you should only really use it if you want to run simple applications with nothing too crazy or pythonic going on (again, check 'Examples')
 
-Due to Pycom (currenly) not supporting all Python features from all versions, you should only really use it if you want to run simple applications with nothing too crazy or pythonic going on (again, check 'Examples')
+Due to Pycom (currently) not supporting all Python features from all versions, you should only really use it if you want to run simple applications with nothing too crazy or pythonic going on (again, check 'Examples')
 
 ## Examples
 
@@ -68,13 +67,13 @@ What Pycom supports and is good at:
 
 High iteration loops:
 
-```
+```py
 for i in range(1, 1000001):
     if i % 3 == 0:
         print(i)
 ```
 
-```
+```py
 def is_prime(n):
     if n == 1:
         return 0
@@ -117,7 +116,8 @@ def main():
 - Multi-line string literals
 - A lot of libraries included in stdlib
 - Classes
-- Heterozygous lists; lists with more than one data type in them
+- Try, except and finally blocks
+- Heterogeneous lists; lists with more than one data type in them
 
 ## Small quirks and differences to CPython:
 
@@ -126,12 +126,12 @@ Python's arbitary size integers; to declare an integer of infinite size, use 'n:
 - Don't use semicolons in your Python source; Pycom will throw an error.
 - Cannot support an 'if \__name__ == "\__main__": ' type thing; the main() function is already entry point
 - If you have no functions in your code, you can do everything as you normally would:
-```
+```py
 print("Hello, World") # This will compile
 ```
 - But if you have at least one user defined function, the starting point needs to be in a main() function block,\
 as such:
-```
+```py
 def printhello():
     print("Hello!")
 
@@ -141,7 +141,7 @@ def main():
 # Will compile 
 ```
 
-```
+```py
 def printhello():
     print("Hello!")
 
