@@ -39,7 +39,6 @@ implemented = [
 ]
 
 pyexceptiontocpp = {
-    "ValueError": "",
     "Exception": "std::runtime_error",
     
 }
@@ -303,9 +302,6 @@ class Compile:
                 elif self.oktokens[i][self.value] == "except":
                     code += "catch("
 
-                elif self.oktokens[i][self.value] == "throw":
-                    code += "raise "
-
                 elif self.oktokens[i][self.value] == "continue":
                     code += "continue"
 
@@ -338,6 +334,9 @@ class Compile:
             elif self.oktokens[i][self.type] == "NAME":
                 if self.oktokens[i][self.value] in pyexceptiontocpp:
                     code += pyexceptiontocpp[self.oktokens[i][self.value]]
+
+                elif str(self.oktokens[i][self.value]).endswith("Error"):
+                    code += "std::runtime_error"
 
                 else:
                     code += self.oktokens[i][self.value]

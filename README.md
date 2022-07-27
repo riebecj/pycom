@@ -116,7 +116,7 @@ def main():
 - Multi-line string literals
 - A lot of libraries included in stdlib
 - Classes
-- Try, except and finally blocks
+- The 'throw' keyword
 - Heterogeneous lists; lists with more than one data type in them
 
 ## Small quirks and differences to CPython:

@@ -3,5 +3,5 @@ import os
 try:
     os.remove("source")
 
-except Exception:
+except FileNotFoundError:
     print("works")
