@@ -11,6 +11,11 @@ typedef boost::multiprecision::cpp_int bigint;
 void print(std::string str){
     std::cout << str << char(10);
 }
+
+void print(const char *cstr){
+    std::cout << cstr << char(10);
+}
+
 void print(int istr){
     std::cout << istr << char(10);
 }

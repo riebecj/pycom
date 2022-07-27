@@ -336,7 +336,7 @@ class Compile:
                     code += pyexceptiontocpp[self.oktokens[i][self.value]]
 
                 elif str(self.oktokens[i][self.value]).endswith("Error"):
-                    code += "std::runtime_error"
+                    code += "const std::runtime_error& e"
 
                 else:
                     code += self.oktokens[i][self.value]

@@ -1,7 +1,7 @@
 import os
 
 try:
-    os.remove("source")
+    os.remove("d")
 
 except FileNotFoundError:
-    print("works")
+    print("caught")
