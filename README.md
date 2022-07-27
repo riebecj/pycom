@@ -69,13 +69,13 @@ What Pycom supports and is good at:
 
 High iteration loops:
 
-```
+```py
 for i in range(1, 1000001):
     if i % 3 == 0:
         print(i)
 ```
 
-```
+```py
 def is_prime(n):
     if n == 1:
         return 0
@@ -128,12 +128,12 @@ Python's arbitary size integers; to declare an integer of infinite size, use 'n:
 - Don't use semicolons in your Python source; Pycom will throw an error.
 - Cannot support an 'if \__name__ == "\__main__": ' type thing; the main() function is already entry point
 - If you have no functions in your code, you can do everything as you normally would:
-```
+```py
 print("Hello, World") # This will compile
 ```
 - But if you have at least one user defined function, the starting point needs to be in a main() function block,\
 as such:
-```
+```py
 def printhello():
     print("Hello!")
 
@@ -143,7 +143,7 @@ def main():
 # Will compile 
 ```
 
-```
+```py
 def printhello():
     print("Hello!")
 
