@@ -60,7 +60,7 @@ Why and when use Pycom?
 
 Python is slow. While many optimisations and new implementations of it have vastly improved its speed, generating native code that can run as a standalone executable from Python code has never really been done. As a result, no matter what, Python code has never hit levels of speed and portability that C/C++. Pycom aims to tackle this.
 
-Due to Pycom (currenly) not supporting all Python features from all versions, you should only really use it if you want to run simple applications with nothing too crazy or pythonic going on (again, check 'Examples')
+Due to Pycom (currently) not supporting all Python features from all versions, you should only really use it if you want to run simple applications with nothing too crazy or pythonic going on (again, check 'Examples')
 
 ## Examples
 
