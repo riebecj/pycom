@@ -25,6 +25,9 @@ implemented = [
     ('KW', 'import'),
     ('KW', "True"),
     ("KW", "False"),
+    ("KW", "try"),
+    ("KW", "except"),
+    ("KW", "raise"),
 
 
     ('SIG', 'NEWLINE'),
@@ -34,6 +37,12 @@ implemented = [
     ('SIG', 'FUNCTYPEPOINTER'),
     ('SIG', 'COMMA')
 ]
+
+pyexceptiontocpp = {
+    "ValueError": "",
+    "Exception": "std::runtime_error",
+    
+}
 
 implementedtypes = [
     "STRING",
@@ -288,6 +297,15 @@ class Compile:
                 elif self.oktokens[i][self.value] == "while":
                     code += "while("
 
+                elif self.oktokens[i][self.value] == "try":
+                    code += "try"
+
+                elif self.oktokens[i][self.value] == "except":
+                    code += "catch("
+
+                elif self.oktokens[i][self.value] == "throw":
+                    code += "raise "
+
                 elif self.oktokens[i][self.value] == "continue":
                     code += "continue"
 
@@ -314,8 +332,15 @@ class Compile:
                         red(f"error: keyword '{self.oktokens[i][self.value]}' is not yet implemented, sorry"))
                     exit(1)
 
-            elif self.oktokens[i][self.type] == "FUNC" or self.oktokens[i][self.type] == "NAME":
+            elif self.oktokens[i][self.type] == "FUNC":
                 code += self.oktokens[i][self.value]
+
+            elif self.oktokens[i][self.type] == "NAME":
+                if self.oktokens[i][self.value] in pyexceptiontocpp:
+                    code += pyexceptiontocpp[self.oktokens[i][self.value]]
+
+                else:
+                    code += self.oktokens[i][self.value]
 
             elif self.oktokens[i][self.type] == "PARAM":
                 if self.oktokens[i+1] == ("SIG", "TYPEPOINTER"):
@@ -343,7 +368,7 @@ class Compile:
                     code += ";"
                 if self.oktokens[i+1] == ("SIG", "BLOCK_START"):
                     blockkw = findlastkw(self.oktokens, i)
-                    if blockkw not in [('KW', 'def'), ('KW', 'else')]:
+                    if blockkw not in [('KW', 'def'), ('KW', 'else'), ('KW', 'try')]:
                         code += ")"
 
         if ("KW", "def") not in self.oktokens and ("KW", "class") not in self.oktokens:

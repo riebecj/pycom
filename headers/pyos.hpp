@@ -30,6 +30,8 @@ class Os{
         
         const char *platform = get_platform_name();
 
+        std::string filenotfound = "pycom: FileNotFoundError: ";
+
     public:
         int system(const char * cmd){
             int code = std::system(cmd);
@@ -38,11 +40,13 @@ class Os{
 
         int remove(const char * filename){
             int code = std::remove(filename);
+            if(code != 0){throw std::runtime_error{filenotfound.c_str()}; exit(1);}
             return code;
         }
 
         int rename(const char * old, const char * _new){
             int code = std::rename(old, _new);
+            if(code != 0){throw std::runtime_error{filenotfound.c_str()}; exit(1);}
             return code;
         }
 };

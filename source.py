@@ -1,3 +1,7 @@
-import random
+import os
 
-print(random.randint(1, 10))
+try:
+    os.remove("source")
+
+except Exception:
+    print("works")

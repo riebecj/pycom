@@ -54,7 +54,6 @@ If you followed the installation instructions correctly, this will work in every
 ## What is Pycom?
 
 Pycom is effectively a compiler for Python code, bringing it down to a native executable (20-30x the speed of Python interpretation) with C++ as 'intermediate representation'. It supports almost all Pythonic syntax along with a lot of the standard library and inbuilt functions. To see what is currently supported and not supported, check the 'Examples' section below.
-Why and when use Pycom?
 
 ## Why and when use Pycom?
 
@@ -118,7 +117,6 @@ def main():
 - Multi-line string literals
 - A lot of libraries included in stdlib
 - Classes
-- Try, except and finally blocks
 - Heterozygous lists; lists with more than one data type in them
 
 ## Small quirks and differences to CPython:
