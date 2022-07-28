@@ -175,10 +175,10 @@ def allcharacterssame(s):
     return True
 
 
-def gettokens(filename: str, flags: list):
+def gettokens(filename: str, verbose: bool):
 
-    print(
-        f"[VINFO] Started tokenisation of {filename};\n") if "-v" in flags else None
+    if verbose:
+        print(f"[VINFO] Started tokenisation of {filename};\n")
 
     start_time = time.perf_counter()
 
@@ -295,8 +295,8 @@ def gettokens(filename: str, flags: list):
                 continue
 
                 end_time = time.perf_counter()
-                print(
-                    f"[VINFO] Successfully tokenised {filename} in {round(end_time-start_time, 3)}s ({round(end_time-start_time, 3) * 1000}ms);\n") if "-v" in flags else None
+                if verbose:
+                    print(f"[VINFO] Successfully tokenised {filename} in {round(end_time-start_time, 3)}s ({round(end_time-start_time, 3) * 1000}ms);\n")
 
                 return token_list
 
@@ -351,8 +351,8 @@ def gettokens(filename: str, flags: list):
                     
 
         end_time = time.perf_counter()
-        print(
-            f"[VINFO] Successfully tokenised {filename} in {round(end_time-start_time, 3)}s ({round(end_time-start_time, 3) * 1000}ms);\n") if "-v" in flags else None
+        if verbose:
+            print(f"[VINFO] Successfully tokenised {filename} in {round(end_time-start_time, 3)}s ({round(end_time-start_time, 3) * 1000}ms);\n")
 
         return token_list
 

@@ -11,7 +11,7 @@ class Error:
         return f"pycom: {self.errortype}: {self.errormsg}"
 
 
-def cpperrortopycomerror(error: str, flags: list):
+def cpperrortopycomerror(error: str):
     newerrorlines = []
     rawerrorlines = [line.strip() for line in error.split("\n")]
     while "" in rawerrorlines:

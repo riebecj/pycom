@@ -1,7 +1,11 @@
-import tokenise
-import time
-from colorama import Fore
 import platform
+import time
+from argparse import Namespace
+
+from colorama import Fore
+
+import tokenise
+
 
 PLATFORM = platform.system()
 
@@ -137,11 +141,11 @@ def removenewlinedups(x):
 
 
 class Compile:
-    def __init__(self, tokens: list, flags: list, filename: str):
+    def __init__(self, tokens: list, verbose: bool, filename: str):
         self.tokens = tokens
         self.type = 0
         self.value = 1
-        self.flags = flags
+        self.verbose = verbose
         self.filename = filename
 
         self.oktokens = self.checktokens()
@@ -162,8 +166,8 @@ class Compile:
         if ("KW", "def") not in self.oktokens and ("KW", "class") not in self.oktokens:
             code += "int main(){\n"
 
-        print(
-            f"[INFO]: Started converting {self.filename} to C++ IR;\n") if "-v" in self.flags else None
+        if self.verbose:
+            print(f"[INFO]: Started converting {self.filename} to C++ IR;\n")
 
         start_time = time.perf_counter()
 
@@ -393,7 +397,8 @@ class Compile:
 
         code = "\n".join(newcpplines)
 
-        print(f"[INFO]: Converted {self.filename} to C++ IR successfully in {round(end_time-start_time, 3)}s ({round(end_time-start_time, 3) * 1000}ms)\n") if "-v" in self.flags else None
+        if self.verbose:
+            print(f"[INFO]: Converted {self.filename} to C++ IR successfully in {round(end_time-start_time, 3)}s ({round(end_time-start_time, 3) * 1000}ms)\n")
 
         return code, self.oktokens
 
